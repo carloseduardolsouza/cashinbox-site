@@ -1,0 +1,86 @@
+#nav-header {
+  height: 70px;
+  padding: 0 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Logo */
+#logo-header {
+  height: 40px;
+  cursor: pointer;
+}
+
+/* Lado direito */
+.section-right {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+/* Menu central */
+.section-dropdown {
+  display: flex;
+  gap: 24px;
+}
+
+.section-dropdown p {
+  font-size: 15px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  position: relative;
+}
+
+/* underline animado */
+.section-dropdown p::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background: #2563eb;
+  transition: 0.3s ease;
+}
+
+.section-dropdown p:hover::after {
+  width: 100%;
+}
+
+.section-dropdown p:hover {
+  color: #2563eb;
+}
+
+/* Botões */
+.section-right button {
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Login */
+#button\ login {
+  background: transparent;
+  border: 1px solid #2563eb;
+  color: #2563eb;
+  margin-right: 10px;
+}
+
+/* Cadastro */
+#button\ cadastro {
+  background: #2563eb;
+  border: none;
+  color: #ffffff;
+}
+
+#button\ cadastro:hover {
+  background: #1e40af;
+}
