@@ -1,18 +1,22 @@
 <div id="nav-header">
-  <img src="../../../assets/Logo-CashInBox-icon-tipografia.png" alt="logo cash in box" id="logo-header"/>
+  <img 
+    src="../../../assets/Logo-CashInBox-icon-tipografia.png" 
+    alt="logo cash in box" 
+    id="logo-header"
+    (click)="navigateToHome()"
+  />
 
   <div class="section-right">
     <div class="section-dropdown">
-      <p>Plataforma</p>
-      <p>Modulos</p>
-      <p>Soluções</p>
-      <p>Preços</p>
-      <p>Contato</p>
+      <p routerLink="/plataforma" routerLinkActive="active">Plataforma</p>
+      <p routerLink="/download" routerLinkActive="active">Download</p>
+      <p routerLink="/precos" routerLinkActive="active">Preços</p>
+      <p routerLink="/contato" routerLinkActive="active">Contato</p>
     </div>
 
     <div>
-      <button id="button login">Login</button>
-      <button id="button cadastro">Cadastro</button>
+      <button id="button-login" (click)="navigateToLogin()">Login</button>
+      <button id="button-cadastro" (click)="navigateToCadastro()">Cadastro</button>
     </div>
   </div>
 </div>

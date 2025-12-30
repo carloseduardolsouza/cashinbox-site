@@ -1,0 +1,194 @@
+<app-nav-header></app-nav-header>
+
+<div class="download-container">
+  <!-- Hero Section -->
+  <section class="hero-download">
+    <div class="hero-content">
+      <span class="hero-tag">DOWNLOADS</span>
+      <h1>Baixe o Cash in Box para todos os seus dispositivos</h1>
+      <p>
+        Gerencie suas finanças de qualquer lugar com nossos aplicativos 
+        nativos para desktop e mobile.
+      </p>
+    </div>
+  </section>
+
+  <!-- Download Cards -->
+  <section class="download-section">
+    <div class="download-grid">
+      <div class="download-card" *ngFor="let app of apps">
+        <div class="card-header" [style.background]="app.color">
+          <div class="platform-icon">{{ app.icon }}</div>
+        </div>
+        <div class="card-body">
+          <h3>{{ app.platform }}</h3>
+          <div class="app-info">
+            <span class="version">{{ app.version }}</span>
+            <span class="size">{{ app.size }}</span>
+          </div>
+          <p class="requirements">{{ app.requirements }}</p>
+          <button 
+            class="btn-download" 
+            (click)="downloadApp(app.platform)"
+            [style.background]="app.color"
+          >
+            <span class="download-icon">⬇️</span>
+            {{ app.storeLink ? 'Baixar na ' + app.storeLink : 'Baixar Agora' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-download">
+    <div class="section-header">
+      <h2>Por que baixar nosso aplicativo?</h2>
+      <p>Funcionalidades exclusivas para dispositivos nativos</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-item" *ngFor="let feature of features">
+        <div class="feature-icon">{{ feature.icon }}</div>
+        <h4>{{ feature.title }}</h4>
+        <p>{{ feature.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- System Requirements -->
+  <section class="requirements-section">
+    <div class="requirements-content">
+      <h2>Requisitos do Sistema</h2>
+      <p class="requirements-subtitle">
+        Verifique se seu dispositivo atende aos requisitos mínimos
+      </p>
+
+      <div class="tabs-container">
+        <div class="tabs">
+          <button 
+            class="tab"
+            [class.active]="selectedPlatform === 'windows'"
+            (click)="selectPlatform('windows')"
+          >
+            🪟 Windows
+          </button>
+          <button 
+            class="tab"
+            [class.active]="selectedPlatform === 'mac'"
+            (click)="selectPlatform('mac')"
+          >
+            🍎 macOS
+          </button>
+          <button 
+            class="tab"
+            [class.active]="selectedPlatform === 'mobile'"
+            (click)="selectPlatform('mobile')"
+          >
+            📱 Mobile
+          </button>
+        </div>
+
+        <div class="tab-content">
+          <ul class="requirements-list">
+            <li *ngFor="let req of systemRequirements[selectedPlatform]">
+              <span class="check-icon">✓</span>
+              {{ req }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <div class="faq-content">
+      <h2>Perguntas Frequentes</h2>
+      
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h4>O aplicativo é gratuito?</h4>
+          <p>
+            Sim! O download e uso básico do aplicativo são completamente gratuitos. 
+            Recursos premium estão disponíveis com planos pagos.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4>Posso usar em múltiplos dispositivos?</h4>
+          <p>
+            Sim, você pode instalar e usar o Cash in Box em todos os seus 
+            dispositivos com a mesma conta.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4>Como funcionam as atualizações?</h4>
+          <p>
+            O aplicativo verifica automaticamente por atualizações e notifica 
+            quando uma nova versão está disponível.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4>Meus dados ficam salvos localmente?</h4>
+          <p>
+            Sim, para melhor performance. Os dados são sincronizados 
+            automaticamente com a nuvem quando há conexão.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4>Funciona offline?</h4>
+          <p>
+            Sim! Você pode acessar e trabalhar com seus dados mesmo sem 
+            internet. As alterações serão sincronizadas quando reconectar.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4>É seguro?</h4>
+          <p>
+            Totalmente! Usamos criptografia AES-256 e todas as comunicações 
+            são feitas através de HTTPS/TLS.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Web Access -->
+  <section class="web-access">
+    <div class="web-content">
+      <div class="web-text">
+        <h2>Prefere usar no navegador?</h2>
+        <p>
+          Acesse o Cash in Box diretamente do seu navegador, sem precisar 
+          instalar nada. Funciona em Chrome, Firefox, Safari e Edge.
+        </p>
+        <button class="btn-web">Acessar Versão Web</button>
+      </div>
+      <div class="web-browsers">
+        <div class="browser-icon">🌐</div>
+        <div class="browser-icon">🦊</div>
+        <div class="browser-icon">🧭</div>
+        <div class="browser-icon">⚡</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-download">
+    <div class="cta-content">
+      <h2>Comece agora mesmo</h2>
+      <p>
+        Baixe o Cash in Box e transforme a gestão financeira da sua empresa hoje
+      </p>
+      <div class="cta-buttons">
+        <button class="btn-primary">Baixar para Windows</button>
+        <button class="btn-primary">Baixar para macOS</button>
+      </div>
+    </div>
+  </section>
+</div>

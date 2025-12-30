@@ -1,1 +1,255 @@
-<p>cadastro works!</p>
+<div class="cadastro-container">
+  <!-- Lado Esquerdo - Banner -->
+  <div class="cadastro-banner">
+    <div class="banner-content">
+      <div class="logo-banner">
+        <img src="../../../assets/Logo-CashInBox-icon-tipografia.png" alt="Cash in Box Logo" />
+      </div>
+      <h2>Comece sua jornada rumo ao sucesso financeiro</h2>
+      <p>
+        Junte-se a centenas de empresas que transformaram sua gestão financeira 
+        com o Cash in Box. Simples, rápido e eficiente.
+      </p>
+      
+      <div class="benefits-list">
+        <div class="benefit">
+          <div class="benefit-icon">✓</div>
+          <span>Teste grátis por 14 dias</span>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">✓</div>
+          <span>Sem cartão de crédito necessário</span>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">✓</div>
+          <span>Suporte especializado incluído</span>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">✓</div>
+          <span>Cancele quando quiser</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lado Direito - Formulário -->
+  <div class="cadastro-form-section">
+    <div class="cadastro-form-content">
+      <!-- Cabeçalho -->
+      <div class="cadastro-header">
+        <h1>Criar sua conta</h1>
+        <p>Preencha os dados para começar</p>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-container">
+        <div class="progress-steps">
+          <div 
+            class="progress-step"
+            [class.active]="currentStep >= 1"
+            [class.completed]="currentStep > 1"
+          >
+            <div class="step-number">1</div>
+            <span class="step-label">Dados Pessoais</span>
+          </div>
+          <div class="progress-line" [class.active]="currentStep > 1"></div>
+          <div 
+            class="progress-step"
+            [class.active]="currentStep >= 2"
+            [class.completed]="currentStep > 2"
+          >
+            <div class="step-number">2</div>
+            <span class="step-label">Empresa</span>
+          </div>
+          <div class="progress-line" [class.active]="currentStep > 2"></div>
+          <div 
+            class="progress-step"
+            [class.active]="currentStep >= 3"
+          >
+            <div class="step-number">3</div>
+            <span class="step-label">Senha</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulário Multi-Step -->
+      <form (ngSubmit)="onSubmit()" class="cadastro-form">
+        <!-- Step 1: Dados Pessoais -->
+        <div class="form-step" *ngIf="currentStep === 1">
+          <div class="form-group">
+            <label for="name">Nome completo *</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              [(ngModel)]="name"
+              placeholder="João Silva"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">E-mail *</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="email"
+              placeholder="joao@empresa.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Telefone *</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              [(ngModel)]="phone"
+              (input)="formatPhone($event)"
+              placeholder="(11) 98765-4321"
+              maxlength="15"
+              required
+            />
+          </div>
+
+          <button type="button" class="btn-next" (click)="nextStep()">
+            Próximo
+          </button>
+        </div>
+
+        <!-- Step 2: Dados da Empresa -->
+        <div class="form-step" *ngIf="currentStep === 2">
+          <div class="form-group">
+            <label for="companyName">Nome da empresa *</label>
+            <input
+              type="text"
+              id="companyName"
+              name="companyName"
+              [(ngModel)]="companyName"
+              placeholder="Minha Empresa LTDA"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="companySize">Tamanho da empresa *</label>
+            <select
+              id="companySize"
+              name="companySize"
+              [(ngModel)]="companySize"
+              required
+            >
+              <option value="" disabled selected>Selecione o tamanho</option>
+              <option *ngFor="let size of companySizes" [value]="size.value">
+                {{ size.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="segment">Segmento *</label>
+            <select
+              id="segment"
+              name="segment"
+              [(ngModel)]="segment"
+              required
+            >
+              <option value="" disabled selected>Selecione o segmento</option>
+              <option *ngFor="let seg of segments" [value]="seg">
+                {{ seg }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-buttons">
+            <button type="button" class="btn-back" (click)="previousStep()">
+              Voltar
+            </button>
+            <button type="button" class="btn-next" (click)="nextStep()">
+              Próximo
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Senha -->
+        <div class="form-step" *ngIf="currentStep === 3">
+          <div class="form-group">
+            <label for="password">Senha *</label>
+            <div class="password-input">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                id="password"
+                name="password"
+                [(ngModel)]="password"
+                placeholder="Mínimo 8 caracteres"
+                minlength="8"
+                required
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                (click)="togglePasswordVisibility()"
+              >
+                {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+              </button>
+            </div>
+            <small class="password-hint">A senha deve ter no mínimo 8 caracteres</small>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirmar senha *</label>
+            <div class="password-input">
+              <input
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                id="confirmPassword"
+                name="confirmPassword"
+                [(ngModel)]="confirmPassword"
+                placeholder="Digite a senha novamente"
+                minlength="8"
+                required
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                (click)="toggleConfirmPasswordVisibility()"
+              >
+                {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group-checkbox">
+            <label class="checkbox-container">
+              <input
+                type="checkbox"
+                [(ngModel)]="acceptTerms"
+                name="acceptTerms"
+                required
+              />
+              <span class="checkbox-text">
+                Eu aceito os <a href="#">Termos de Uso</a> e a 
+                <a href="#">Política de Privacidade</a>
+              </span>
+            </label>
+          </div>
+
+          <div class="form-buttons">
+            <button type="button" class="btn-back" (click)="previousStep()">
+              Voltar
+            </button>
+            <button type="submit" class="btn-submit">
+              Criar conta
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Link para Login -->
+      <div class="login-link">
+        <p>Já tem uma conta? <a routerLink="/login">Fazer login</a></p>
+      </div>
+    </div>
+  </div>
+</div>

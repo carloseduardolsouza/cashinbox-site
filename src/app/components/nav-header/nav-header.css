@@ -35,6 +35,11 @@
   color: #374151;
   cursor: pointer;
   position: relative;
+  transition: color 0.2s ease;
+}
+
+.section-dropdown p.active {
+  color: #2563eb;
 }
 
 /* underline animado */
@@ -49,7 +54,8 @@
   transition: 0.3s ease;
 }
 
-.section-dropdown p:hover::after {
+.section-dropdown p:hover::after,
+.section-dropdown p.active::after {
   width: 100%;
 }
 
@@ -64,23 +70,60 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 /* Login */
-#button\ login {
+#button-login {
   background: transparent;
   border: 1px solid #2563eb;
   color: #2563eb;
   margin-right: 10px;
 }
 
+#button-login:hover {
+  background: rgba(37, 99, 235, 0.05);
+}
+
 /* Cadastro */
-#button\ cadastro {
+#button-cadastro {
   background: #2563eb;
   border: none;
   color: #ffffff;
 }
 
-#button\ cadastro:hover {
+#button-cadastro:hover {
   background: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+/* Responsivo */
+@media (max-width: 1024px) {
+  .section-dropdown {
+    display: none;
+  }
+
+  .section-right {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  #nav-header {
+    padding: 0 16px;
+  }
+
+  #logo-header {
+    height: 32px;
+  }
+
+  .section-right button {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  #button-login {
+    margin-right: 6px;
+  }
 }

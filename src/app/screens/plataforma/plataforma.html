@@ -1,0 +1,116 @@
+<app-nav-header></app-nav-header>
+
+<div class="plataforma-container">
+  <!-- Hero Section -->
+  <section class="hero-plataforma">
+    <div class="hero-content">
+      <span class="hero-tag">PLATAFORMA</span>
+      <h1>Uma plataforma completa para gestão financeira empresarial</h1>
+      <p>
+        Tecnologia de ponta combinada com uma interface intuitiva para 
+        proporcionar a melhor experiência em gestão financeira.
+      </p>
+      <div class="hero-buttons">
+        <button class="btn-primary">Testar Gratuitamente</button>
+        <button class="btn-secondary">Ver Demonstração</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="features-section">
+    <div class="section-header">
+      <h2>Recursos da Plataforma</h2>
+      <p>Tudo que você precisa para gerir suas finanças com excelência</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of features">
+        <div class="feature-icon-large">{{ feature.icon }}</div>
+        <h3>{{ feature.title }}</h3>
+        <p>{{ feature.description }}</p>
+        <ul class="feature-details">
+          <li *ngFor="let detail of feature.details">
+            <span class="check-icon">✓</span>
+            {{ detail }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technology Stack -->
+  <section class="technology-section">
+    <div class="tech-content">
+      <h2>Construído com tecnologia de ponta</h2>
+      <p>
+        Utilizamos as melhores tecnologias do mercado para garantir 
+        performance, segurança e escalabilidade.
+      </p>
+      <div class="tech-grid">
+        <div class="tech-item" *ngFor="let tech of technologies">
+          <div class="tech-icon">{{ tech.icon }}</div>
+          <span>{{ tech.name }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Integration Section -->
+  <section class="integration-section">
+    <div class="integration-content">
+      <div class="integration-text">
+        <h2>Integrações Poderosas</h2>
+        <p>
+          Conecte-se facilmente com seus bancos, ERPs, sistemas contábeis 
+          e ferramentas favoritas. Tudo sincronizado automaticamente.
+        </p>
+        <ul class="integration-list">
+          <li>
+            <span class="icon">🏦</span>
+            <div>
+              <strong>Bancos</strong>
+              <p>Integração com os principais bancos do Brasil</p>
+            </div>
+          </li>
+          <li>
+            <span class="icon">📦</span>
+            <div>
+              <strong>ERPs</strong>
+              <p>Sincronização com SAP, TOTVS, Omie e outros</p>
+            </div>
+          </li>
+          <li>
+            <span class="icon">🧮</span>
+            <div>
+              <strong>Contabilidade</strong>
+              <p>Exporte dados para seu contador automaticamente</p>
+            </div>
+          </li>
+          <li>
+            <span class="icon">💳</span>
+            <div>
+              <strong>Pagamentos</strong>
+              <p>Integração com gateways de pagamento</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="integration-image">
+        <img 
+          src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop" 
+          alt="Integrações"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>Pronto para experimentar?</h2>
+      <p>Comece gratuitamente e veja como podemos transformar sua gestão financeira</p>
+      <button class="btn-white">Começar Agora</button>
+    </div>
+  </section>
+</div>

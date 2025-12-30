@@ -1,0 +1,249 @@
+<app-nav-header></app-nav-header>
+
+<div class="contato-container">
+  <!-- Hero Section -->
+  <section class="hero-contato">
+    <div class="hero-content">
+      <span class="hero-tag">CONTATO</span>
+      <h1>Vamos conversar sobre seu negócio</h1>
+      <p>
+        Estamos prontos para ajudar você a transformar a gestão financeira 
+        da sua empresa. Entre em contato conosco!
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact Methods -->
+  <section class="contact-methods">
+    <div class="methods-grid">
+      <div class="method-card" *ngFor="let method of contactMethods">
+        <div class="method-icon">{{ method.icon }}</div>
+        <h3>{{ method.title }}</h3>
+        <p class="method-value">{{ method.value }}</p>
+        <p class="method-description">{{ method.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Form and Info -->
+  <section class="contact-section">
+    <div class="contact-wrapper">
+      <!-- Form -->
+      <div class="contact-form-container">
+        <h2>Envie sua mensagem</h2>
+        <p class="form-subtitle">
+          Preencha o formulário e entraremos em contato o mais breve possível
+        </p>
+
+        <form (ngSubmit)="onSubmit()" class="contact-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Nome completo *</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                [(ngModel)]="contactForm.name"
+                placeholder="Seu nome"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="email">E-mail *</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                [(ngModel)]="contactForm.email"
+                placeholder="seu@email.com"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Telefone *</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                [(ngModel)]="contactForm.phone"
+                (input)="formatPhone($event)"
+                placeholder="(11) 98765-4321"
+                maxlength="15"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="company">Empresa</label>
+              <input
+                type="text"
+                id="company"
+                name="company"
+                [(ngModel)]="contactForm.company"
+                placeholder="Nome da empresa"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="subject">Assunto *</label>
+            <select
+              id="subject"
+              name="subject"
+              [(ngModel)]="contactForm.subject"
+              required
+            >
+              <option *ngFor="let subj of subjects" [value]="subj.value">
+                {{ subj.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Mensagem *</label>
+            <textarea
+              id="message"
+              name="message"
+              [(ngModel)]="contactForm.message"
+              placeholder="Digite sua mensagem..."
+              rows="6"
+              required
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">
+            Enviar Mensagem
+          </button>
+        </form>
+      </div>
+
+      <!-- Info Sidebar -->
+      <div class="contact-info">
+        <div class="info-card">
+          <h3>Horário de Atendimento</h3>
+          <div class="info-item">
+            <span class="icon">🕐</span>
+            <div>
+              <p><strong>Segunda a Sexta</strong></p>
+              <p>9:00 às 18:00</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="icon">📅</span>
+            <div>
+              <p><strong>Sábado</strong></p>
+              <p>9:00 às 13:00</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="icon">🚫</span>
+            <div>
+              <p><strong>Domingo</strong></p>
+              <p>Fechado</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>Redes Sociais</h3>
+          <p class="social-description">
+            Siga-nos nas redes sociais e fique por dentro das novidades
+          </p>
+          <div class="social-links">
+            <a 
+              *ngFor="let social of socialMedia" 
+              [href]="social.link" 
+              class="social-link"
+              [title]="social.name"
+            >
+              {{ social.icon }}
+            </a>
+          </div>
+        </div>
+
+        <div class="info-card highlight">
+          <h3>Suporte Técnico</h3>
+          <p>
+            Precisa de ajuda técnica urgente? Acesse nosso portal de suporte 
+            para soluções rápidas.
+          </p>
+          <button class="btn-support">
+            Acessar Suporte
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map Section -->
+  <section class="map-section">
+    <div class="map-content">
+      <div class="map-text">
+        <h2>Visite nosso escritório</h2>
+        <p>
+          Estamos localizados no coração de São Paulo, na Avenida Paulista. 
+          Agende uma visita e conheça nossa equipe pessoalmente.
+        </p>
+        <div class="address-details">
+          <div class="address-item">
+            <span class="icon">📍</span>
+            <div>
+              <strong>Endereço</strong>
+              <p>Av. Paulista, 1000 - 10º andar</p>
+              <p>São Paulo - SP, 01310-100</p>
+            </div>
+          </div>
+          <div class="address-item">
+            <span class="icon">🚇</span>
+            <div>
+              <strong>Como chegar</strong>
+              <p>Estação Trianon-MASP (Linha Verde)</p>
+            </div>
+          </div>
+        </div>
+        <button class="btn-directions">
+          Abrir no Google Maps
+        </button>
+      </div>
+      <div class="map-placeholder">
+        <img 
+          src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&h=400&fit=crop" 
+          alt="Localização"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Quick -->
+  <section class="faq-quick">
+    <div class="faq-content">
+      <h2>Dúvidas Frequentes</h2>
+      <p class="faq-subtitle">
+        Antes de entrar em contato, veja se sua dúvida já foi respondida
+      </p>
+      
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h4>Qual o prazo de resposta?</h4>
+          <p>Respondemos todas as mensagens em até 24 horas úteis.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Posso agendar uma demonstração?</h4>
+          <p>Sim! Selecione "Vendas" no assunto e solicite uma demo.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Como funciona o suporte?</h4>
+          <p>Oferecemos suporte por email, telefone e chat ao vivo.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Vocês atendem todo o Brasil?</h4>
+          <p>Sim, atendemos empresas de todo o território nacional.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
