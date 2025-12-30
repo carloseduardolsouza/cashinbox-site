@@ -12,8 +12,8 @@
         e insights que ajudam sua empresa a crescer de forma sustentável.
       </p>
       <div class="hero-buttons">
-        <button class="btn-primary">Começar Gratuitamente</button>
-        <button class="btn-secondary">Agendar Demonstração</button>
+        <button class="btn-primary" (click)="startFreeTrial()">Começar Teste Gratuito</button>
+        <button class="btn-secondary" (click)="seeDemo()">Ver Plataforma</button>
       </div>
     </div>
     <div class="hero-image">
@@ -28,7 +28,7 @@
       <span class="section-tag">FUNCIONALIDADES</span>
       <h2>Tudo que você precisa em um só lugar</h2>
       <p>
-        Ferramentas completas para gestão financeira empresarial com tecnologia de ponta
+        Ferramentas completas para gestão financeira empresarial
       </p>
     </div>
 
@@ -46,7 +46,7 @@
         <div class="feature-icon">🤖</div>
         <h3>Automação Inteligente</h3>
         <p>
-          Automatize processos repetitivos como conciliação bancária, emissão de 
+          Automatize processos repetitivos como conciliação, emissão de 
           boletos e lembretes de pagamento.
         </p>
       </div>
@@ -62,16 +62,16 @@
 
       <div class="feature-card">
         <div class="feature-icon">📈</div>
-        <h3>Relatórios Avançados</h3>
+        <h3>Análise com IA</h3>
         <p>
-          Gere relatórios detalhados com análises preditivas e insights 
-          acionáveis para tomar melhores decisões.
+          Previsões inteligentes e insights acionáveis para tomar 
+          melhores decisões estratégicas.
         </p>
       </div>
 
       <div class="feature-card">
         <div class="feature-icon">🔒</div>
-        <h3>Segurança Bancária</h3>
+        <h3>Segurança Total</h3>
         <p>
           Criptografia de ponta a ponta e conformidade com LGPD garantem 
           a proteção total dos seus dados.
@@ -79,11 +79,11 @@
       </div>
 
       <div class="feature-card">
-        <div class="feature-icon">🔄</div>
-        <h3>Integrações</h3>
+        <div class="feature-icon">📦</div>
+        <h3>Controle de Estoque</h3>
         <p>
-          Conecte-se com seus bancos, ERPs e sistemas contábeis de forma 
-          simples e automatizada.
+          Gerencie seu estoque de forma eficiente com alertas de 
+          reposição e relatórios detalhados.
         </p>
       </div>
     </div>
@@ -130,8 +130,8 @@
           <div class="benefit-item">
             <div class="benefit-check">✓</div>
             <div>
-              <h4>Escalável para qualquer porte</h4>
-              <p>Da pequena empresa ao grande grupo empresarial</p>
+              <h4>14 dias de teste gratuito</h4>
+              <p>Experimente todas as funcionalidades sem compromisso</p>
             </div>
           </div>
         </div>
@@ -153,9 +153,11 @@
       <h2>Pronto para transformar sua gestão financeira?</h2>
       <p>
         Junte-se a centenas de empresas que já simplificaram sua gestão financeira 
-        com o Cash in Box. Comece hoje mesmo!
+        com o Cash in Box. Comece seu teste gratuito hoje mesmo!
       </p>
-      <button class="btn-white">Criar Conta Gratuita</button>
+      <button class="btn-white" (click)="startFreeTrial()">Começar Teste Gratuito</button>
     </div>
   </section>
 </div>
+
+<app-footer></app-footer>

@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { NavHeader } from '../../components/nav-header/nav-header';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-plataforma',
-  imports: [NavHeader],
+  imports: [NavHeader, CommonModule],
   templateUrl: './plataforma.html',
   styleUrl: './plataforma.css',
 })
@@ -36,43 +37,76 @@ export class Plataforma {
       title: 'Automação de Processos',
       description: 'Automatize tarefas repetitivas e ganhe tempo para focar no crescimento do seu negócio.',
       details: [
-        'Conciliação bancária',
+        'Conciliação automática',
         'Emissão de boletos',
         'Lembretes de pagamento',
-        'Integração com bancos'
+        'Cobrança automatizada'
       ]
     },
     {
       icon: '📈',
-      title: 'Relatórios Avançados',
-      description: 'Gere relatórios profissionais com análises preditivas e insights acionáveis.',
+      title: 'Análise Preditiva com IA',
+      description: 'Utilize inteligência artificial para previsões e insights estratégicos.',
       details: [
-        'Análise preditiva',
-        'DRE automatizado',
-        'Balanço patrimonial',
-        'Fluxo de caixa projetado'
+        'Previsão de vendas',
+        'Análise de tendências',
+        'Recomendações inteligentes',
+        'Detecção de anomalias'
       ]
     },
     {
-      icon: '🔒',
-      title: 'Segurança Máxima',
-      description: 'Seus dados protegidos com criptografia de ponta a ponta e conformidade com LGPD.',
+      icon: '👥',
+      title: 'Gestão de Comissões',
+      description: 'Gerencie comissões de vendedores de forma automática e transparente.',
       details: [
-        'Criptografia AES-256',
-        'Backup automático',
-        'Auditoria completa',
-        'Conformidade LGPD'
+        'Cálculo automático',
+        'Múltiplas regras',
+        'Relatórios por vendedor',
+        'Histórico completo'
       ]
     },
     {
-      icon: '📱',
-      title: 'Multi-Plataforma',
-      description: 'Acesse de qualquer lugar: web, mobile ou desktop. Seus dados sempre sincronizados.',
+      icon: '📦',
+      title: 'Controle de Estoque',
+      description: 'Gerencie seu estoque com precisão e receba alertas de reposição.',
       details: [
-        'App iOS e Android',
-        'Desktop Windows/Mac',
-        'Interface web',
-        'Sincronização em nuvem'
+        'Controle em tempo real',
+        'Alertas de estoque baixo',
+        'Movimentações detalhadas',
+        'Integração com vendas'
+      ]
+    },
+    {
+      icon: '💳',
+      title: 'Sistema de Crediário',
+      description: 'Sistema completo de parcelamento próprio para suas vendas.',
+      details: [
+        'Parcelamento flexível',
+        'Controle de inadimplência',
+        'Lembretes automáticos',
+        'Relatórios de recebíveis'
+      ]
+    },
+    {
+      icon: '📝',
+      title: 'Contas a Pagar',
+      description: 'Gerencie todas as contas a pagar da sua empresa em um só lugar.',
+      details: [
+        'Calendário de pagamentos',
+        'Alertas de vencimento',
+        'Histórico completo',
+        'Categorização de despesas'
+      ]
+    },
+    {
+      icon: '💾',
+      title: 'Backup Automático',
+      description: 'Seus dados sempre seguros com backup automático na nuvem.',
+      details: [
+        'Backup diário',
+        'Recuperação fácil',
+        'Criptografia total',
+        'Armazenamento seguro'
       ]
     }
   ];

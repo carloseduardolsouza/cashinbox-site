@@ -13,34 +13,6 @@
         <p>Entre com sua conta para continuar</p>
       </div>
 
-      <!-- Botões de Login Social -->
-      <div class="social-login">
-        <button type="button" class="social-btn google-btn" (click)="loginWithGoogle()">
-          <svg width="20" height="20" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-          </svg>
-          Continuar com Google
-        </button>
-
-        <button type="button" class="social-btn microsoft-btn" (click)="loginWithMicrosoft()">
-          <svg width="20" height="20" viewBox="0 0 24 24">
-            <path fill="#f25022" d="M11.4 11.4H2V2h9.4v9.4z"/>
-            <path fill="#00a4ef" d="M22 11.4h-9.4V2H22v9.4z"/>
-            <path fill="#7fba00" d="M11.4 22H2v-9.4h9.4V22z"/>
-            <path fill="#ffb900" d="M22 22h-9.4v-9.4H22V22z"/>
-          </svg>
-          Continuar com Microsoft
-        </button>
-      </div>
-
-      <!-- Divisor -->
-      <div class="divider">
-        <span>ou</span>
-      </div>
-
       <!-- Formulário -->
       <form (ngSubmit)="onSubmit()" class="login-form">
         <div class="form-group">
@@ -95,7 +67,7 @@
 
       <!-- Link para cadastro -->
       <div class="signup-link">
-        <p>Não tem uma conta? <a routerLink="/cadastro">Criar conta</a></p>
+        <p>Não tem uma conta? <a routerLink="/cadastro">Criar conta gratuita</a></p>
       </div>
     </div>
   </div>
@@ -103,23 +75,23 @@
   <!-- Lado Direito - Imagem/Banner -->
   <div class="login-banner">
     <div class="banner-content">
-      <h2>Gestão Financeira Simplificada</h2>
+      <h2>Gestão Financeira Completa</h2>
       <p>
-        Controle total das finanças da sua empresa com dashboards intuitivos,
-        automação inteligente e relatórios em tempo real.
+        Controle total das finanças da sua empresa com todas as ferramentas 
+        que você precisa em um só lugar.
       </p>
       <div class="banner-stats">
         <div class="stat">
-          <h3>500+</h3>
-          <p>Empresas ativas</p>
+          <h3>14</h3>
+          <p>Dias grátis</p>
         </div>
         <div class="stat">
-          <h3>95%</h3>
-          <p>Redução de erros</p>
+          <h3>100%</h3>
+          <p>Seguro</p>
         </div>
         <div class="stat">
-          <h3>15h</h3>
-          <p>Economizadas/semana</p>
+          <h3>24/7</h3>
+          <p>Suporte</p>
         </div>
       </div>
     </div>

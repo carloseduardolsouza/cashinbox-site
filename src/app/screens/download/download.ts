@@ -9,120 +9,58 @@ import { CommonModule } from '@angular/common';
   styleUrl: './download.css',
 })
 export class Download {
-  apps = [
-    {
-      platform: 'Windows',
-      icon: '🪟',
-      version: 'v2.5.1',
-      size: '85 MB',
-      requirements: 'Windows 10 ou superior',
-      downloadUrl: '#',
-      color: '#0078d4'
-    },
-    {
-      platform: 'macOS',
-      icon: '🍎',
-      version: 'v2.5.1',
-      size: '92 MB',
-      requirements: 'macOS 11.0 ou superior',
-      downloadUrl: '#',
-      color: '#000000'
-    },
-    {
-      platform: 'Linux',
-      icon: '🐧',
-      version: 'v2.5.1',
-      size: '78 MB',
-      requirements: 'Ubuntu 20.04 ou superior',
-      downloadUrl: '#',
-      color: '#dd4814'
-    },
-    {
-      platform: 'iOS',
-      icon: '📱',
-      version: 'v2.5.0',
-      size: '65 MB',
-      requirements: 'iOS 14.0 ou superior',
-      downloadUrl: '#',
-      color: '#007aff',
-      storeLink: 'App Store'
-    },
-    {
-      platform: 'Android',
-      icon: '🤖',
-      version: 'v2.5.0',
-      size: '58 MB',
-      requirements: 'Android 8.0 ou superior',
-      downloadUrl: '#',
-      color: '#3ddc84',
-      storeLink: 'Google Play'
-    }
-  ];
+  systemRequirements = {
+    windows: [
+      'Windows 7 (32-bit) ou superior',
+      'Processador Intel Celeron ou equivalente',
+      '2 GB de RAM',
+      '500 MB de espaço livre em disco',
+      'Conexão com internet',
+    ],
+  };
+
+  selectedPlatform: 'windows' = 'windows';
 
   features = [
     {
       icon: '🔄',
       title: 'Sincronização Automática',
-      description: 'Seus dados sempre atualizados em todos os dispositivos'
+      description: 'Seus dados sempre atualizados e seguros na nuvem',
     },
     {
       icon: '📴',
       title: 'Modo Offline',
-      description: 'Continue trabalhando mesmo sem conexão com internet'
+      description: 'Continue trabalhando mesmo sem conexão com internet',
     },
     {
       icon: '🔔',
       title: 'Notificações Push',
-      description: 'Receba alertas importantes em tempo real'
+      description: 'Receba alertas importantes em tempo real',
     },
     {
       icon: '🎨',
       title: 'Interface Nativa',
-      description: 'Design otimizado para cada plataforma'
+      description: 'Design otimizado para Windows',
     },
     {
       icon: '⚡',
       title: 'Performance',
-      description: 'Aplicativo rápido e otimizado para seu dispositivo'
+      description: 'Aplicativo rápido e otimizado para seu dispositivo',
     },
     {
       icon: '🔒',
       title: 'Segurança',
-      description: 'Dados criptografados e protegidos localmente'
-    }
+      description: 'Dados criptografados e protegidos localmente',
+    },
   ];
 
-  systemRequirements = {
-    windows: [
-      'Windows 10 (64-bit) ou superior',
-      'Processador Intel Core i3 ou equivalente',
-      '4 GB de RAM',
-      '500 MB de espaço livre em disco',
-      'Conexão com internet'
-    ],
-    mac: [
-      'macOS 11.0 Big Sur ou superior',
-      'Processador Intel ou Apple Silicon (M1/M2)',
-      '4 GB de RAM',
-      '500 MB de espaço livre em disco',
-      'Conexão com internet'
-    ],
-    mobile: [
-      'iOS 14.0+ ou Android 8.0+',
-      '2 GB de RAM mínimo',
-      '200 MB de espaço livre',
-      'Conexão 3G/4G/5G ou Wi-Fi'
-    ]
-  };
+  downloadApp() {
+    const url =
+      'https://release-assets.githubusercontent.com/github-production-release-asset/1107716256/323a0530-a0af-4fe8-910a-13f604bb44d5?sp=r&sv=2018-11-09&sr=b&spr=https&se=2025-12-30T22%3A12%3A26Z&rscd=attachment%3B+filename%3DCashInBox-Setup-1.5.0.exe&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2025-12-30T21%3A11%3A57Z&ske=2025-12-30T22%3A12%3A26Z&sks=b&skv=2018-11-09&sig=qbD%2FIRgUfnUCx8k%2BsEANZ1xJzTPkZFlT%2FfKhj8WmhKA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc2NzEzMjcxOCwibmJmIjoxNzY3MTI5MTE4LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.h9yW6hZNlrn3-wtCy_JqM3zZ9ZkcQBhnU9svvkqudn8&response-content-disposition=attachment%3B%20filename%3DCashInBox-Setup-1.5.0.exe&response-content-type=application%2Foctet-stream';
 
-  selectedPlatform: 'windows' | 'mac' | 'mobile' = 'windows';
-
-  downloadApp(platform: string) {
-    console.log(`Downloading ${platform} app`);
-    // Implementar lógica de download
-  }
-
-  selectPlatform(platform: 'windows' | 'mac' | 'mobile') {
-    this.selectedPlatform = platform;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'CashInBox-Setup.exe';
+    link.click();
   }
 }

@@ -31,40 +31,42 @@ export class Contato {
     {
       icon: '📧',
       title: 'Email',
-      value: 'contato@cashinbox.com.br',
+      value: 'cashinboxsoftware@gmail.com',
       description: 'Resposta em até 24 horas'
-    },
-    {
-      icon: '📱',
-      title: 'Telefone',
-      value: '+55 (11) 4000-0000',
-      description: 'Seg a Sex, 9h às 18h'
     },
     {
       icon: '💬',
       title: 'WhatsApp',
-      value: '+55 (11) 9 9999-9999',
-      description: 'Atendimento imediato'
-    },
-    {
-      icon: '📍',
-      title: 'Endereço',
-      value: 'São Paulo, SP',
-      description: 'Av. Paulista, 1000'
+      value: '(62) 99462-5955',
+      description: 'Atendimento imediato',
+      link: 'https://wa.me/5562994625955'
     }
   ];
 
   socialMedia = [
     { icon: '📘', name: 'Facebook', link: '#' },
     { icon: '📷', name: 'Instagram', link: '#' },
-    { icon: '🔗', name: 'LinkedIn', link: '#' },
-    { icon: '🐦', name: 'Twitter', link: '#' }
+    { icon: '🔗', name: 'LinkedIn', link: '#' }
   ];
 
   onSubmit() {
     console.log('Form submitted:', this.contactForm);
-    // Implementar lógica de envio
-    alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
+    
+    // Montar mensagem para WhatsApp
+    const message = `Olá! Meu nome é ${this.contactForm.name}.
+    
+Email: ${this.contactForm.email}
+Telefone: ${this.contactForm.phone}
+Empresa: ${this.contactForm.company || 'Não informado'}
+Assunto: ${this.subjects.find(s => s.value === this.contactForm.subject)?.label}
+
+Mensagem: ${this.contactForm.message}`;
+    
+    const whatsappUrl = `https://wa.me/5562994625955?text=${encodeURIComponent(message)}`;
+    
+    alert('Sua mensagem será enviada via WhatsApp!');
+    window.open(whatsappUrl, '_blank');
+    
     this.resetForm();
   }
 
@@ -87,5 +89,9 @@ export class Contato {
       value = value.replace(/(\d)(\d{4})$/, '$1-$2');
       this.contactForm.phone = value;
     }
+  }
+
+  openWhatsApp() {
+    window.open('https://wa.me/5562994625955', '_blank');
   }
 }

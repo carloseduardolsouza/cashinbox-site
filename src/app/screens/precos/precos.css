@@ -38,84 +38,19 @@
 .hero-content > p {
   font-size: 19px;
   color: #6b7280;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
   line-height: 1.6;
 }
 
-/* Billing Toggle */
-.billing-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #6b7280;
-}
-
-.billing-toggle span {
-  transition: all 0.2s ease;
-}
-
-.billing-toggle span.active {
-  color: #2563eb;
-  font-weight: 600;
-}
-
-.discount-badge {
+.trial-badge {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 12px 24px;
   background: #10b981;
   color: #ffffff;
-  border-radius: 12px;
-  font-size: 12px;
+  border-radius: 30px;
+  font-size: 16px;
   font-weight: 600;
-  margin-left: 6px;
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 56px;
-  height: 28px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #cbd5e1;
-  transition: 0.4s;
-  border-radius: 28px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #2563eb;
-}
-
-input:checked + .slider:before {
-  transform: translateX(28px);
+  margin-top: 16px;
 }
 
 /* Plans Section */
@@ -126,9 +61,9 @@ input:checked + .slider:before {
 
 .plans-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 32px;
-  max-width: 1300px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -139,6 +74,8 @@ input:checked + .slider:before {
   border: 2px solid #e5e7eb;
   border-radius: 16px;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .plan-card:hover {
@@ -190,7 +127,7 @@ input:checked + .slider:before {
 }
 
 .plan-description {
-  font-size: 15px;
+  font-size: 14px;
   color: #6b7280;
   line-height: 1.5;
 }
@@ -217,7 +154,7 @@ input:checked + .slider:before {
 }
 
 .amount {
-  font-size: 56px;
+  font-size: 48px;
   font-weight: 700;
   color: #111827;
   line-height: 1;
@@ -229,24 +166,45 @@ input:checked + .slider:before {
 }
 
 .price-info {
+  font-size: 13px;
+  color: #10b981;
+  font-weight: 600;
+  margin: 4px 0;
+}
+
+.price-monthly {
   font-size: 14px;
   color: #9ca3af;
+  margin-top: 4px;
+}
+
+.features-section {
+  flex: 1;
+  margin-bottom: 24px;
+}
+
+.features-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 16px;
+  text-align: center;
 }
 
 .features-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 32px 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .features-list li {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  font-size: 15px;
+  font-size: 14px;
   color: #374151;
   line-height: 1.5;
 }
@@ -283,76 +241,67 @@ input:checked + .slider:before {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Comparison Section */
-.comparison-section {
+/* Features Highlight */
+.features-highlight {
   padding: 100px 32px;
   background: #f9fafb;
 }
 
-.comparison-content {
+.features-content {
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.comparison-content h2 {
-  font-size: 40px;
+.features-content h2 {
+  font-size: 36px;
   font-weight: 700;
   color: #111827;
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: 60px;
 }
 
-.comparison-subtitle {
+.features-grid-detailed {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 32px;
+}
+
+.feature-item {
   text-align: center;
-  font-size: 18px;
-  color: #6b7280;
-  margin-bottom: 48px;
-}
-
-.comparison-table-wrapper {
-  overflow-x: auto;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.comparison-table {
-  width: 100%;
+  padding: 32px 24px;
   background: #ffffff;
-  border-collapse: collapse;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
-.comparison-table thead {
-  background: #f9fafb;
+.feature-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-.comparison-table th {
-  padding: 20px 24px;
-  text-align: left;
-  font-size: 16px;
+.feature-icon {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 20px;
+}
+
+.feature-item h4 {
+  font-size: 18px;
   font-weight: 600;
   color: #111827;
-  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 8px;
 }
 
-.comparison-table th.highlight {
-  background: #eff6ff;
-  color: #2563eb;
-}
-
-.comparison-table td {
-  padding: 16px 24px;
-  font-size: 15px;
-  color: #374151;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.comparison-table td.highlight {
-  background: #eff6ff;
-}
-
-.comparison-table td:first-child {
-  font-weight: 500;
-  color: #111827;
+.feature-item p {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
 }
 
 /* FAQ Section */
@@ -367,7 +316,7 @@ input:checked + .slider:before {
 }
 
 .faq-content h2 {
-  font-size: 40px;
+  font-size: 36px;
   font-weight: 700;
   color: #111827;
   text-align: center;
@@ -478,18 +427,13 @@ input:checked + .slider:before {
     grid-template-columns: 1fr;
   }
 
-  .comparison-table {
-    font-size: 14px;
-  }
-
-  .comparison-table th,
-  .comparison-table td {
-    padding: 12px 16px;
-  }
-
-  .comparison-content h2,
+  .features-content h2,
   .faq-content h2,
   .cta-content h2 {
     font-size: 28px;
+  }
+
+  .features-grid-detailed {
+    grid-template-columns: 1fr;
   }
 }

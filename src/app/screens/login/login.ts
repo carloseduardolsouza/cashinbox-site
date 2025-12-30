@@ -18,21 +18,21 @@ export class Login {
   constructor(private router: Router) {}
 
   onSubmit() {
-    console.log('Login attempt:', { email: this.email, rememberMe: this.rememberMe });
+    if (!this.email || !this.password) {
+      alert('Por favor, preencha todos os campos!');
+      return;
+    }
+
+    console.log('Login attempt:', { 
+      email: this.email, 
+      rememberMe: this.rememberMe 
+    });
+    
     // Aqui você implementará a lógica de autenticação
+    alert('Login realizado com sucesso! (Funcionalidade em desenvolvimento)');
   }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
-  }
-
-  loginWithGoogle() {
-    console.log('Login with Google');
-    // Implementar login com Google
-  }
-
-  loginWithMicrosoft() {
-    console.log('Login with Microsoft');
-    // Implementar login com Microsoft
   }
 }

@@ -5,28 +5,28 @@
       <div class="logo-banner">
         <img src="../../../assets/Logo-CashInBox-icon-tipografia.png" alt="Cash in Box Logo" />
       </div>
-      <h2>Comece sua jornada rumo ao sucesso financeiro</h2>
+      <h2>Comece sua jornada com 14 dias grátis</h2>
       <p>
-        Junte-se a centenas de empresas que transformaram sua gestão financeira 
-        com o Cash in Box. Simples, rápido e eficiente.
+        Experimente todas as funcionalidades do Cash in Box sem compromisso. 
+        Sem cartão de crédito necessário!
       </p>
       
       <div class="benefits-list">
         <div class="benefit">
           <div class="benefit-icon">✓</div>
-          <span>Teste grátis por 14 dias</span>
+          <span>14 dias de teste gratuito</span>
         </div>
         <div class="benefit">
           <div class="benefit-icon">✓</div>
-          <span>Sem cartão de crédito necessário</span>
+          <span>Sem cartão de crédito</span>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">✓</div>
+          <span>Acesso completo a todas funcionalidades</span>
         </div>
         <div class="benefit">
           <div class="benefit-icon">✓</div>
           <span>Suporte especializado incluído</span>
-        </div>
-        <div class="benefit">
-          <div class="benefit-icon">✓</div>
-          <span>Cancele quando quiser</span>
         </div>
       </div>
     </div>
@@ -38,7 +38,7 @@
       <!-- Cabeçalho -->
       <div class="cadastro-header">
         <h1>Criar sua conta</h1>
-        <p>Preencha os dados para começar</p>
+        <p>Preencha os dados para começar seu teste gratuito</p>
       </div>
 
       <!-- Progress Bar -->
@@ -50,7 +50,7 @@
             [class.completed]="currentStep > 1"
           >
             <div class="step-number">1</div>
-            <span class="step-label">Dados Pessoais</span>
+            <span class="step-label">Seus Dados</span>
           </div>
           <div class="progress-line" [class.active]="currentStep > 1"></div>
           <div 
@@ -59,22 +59,31 @@
             [class.completed]="currentStep > 2"
           >
             <div class="step-number">2</div>
-            <span class="step-label">Empresa</span>
+            <span class="step-label">Senha</span>
           </div>
           <div class="progress-line" [class.active]="currentStep > 2"></div>
           <div 
             class="progress-step"
             [class.active]="currentStep >= 3"
+            [class.completed]="currentStep > 3"
           >
             <div class="step-number">3</div>
-            <span class="step-label">Senha</span>
+            <span class="step-label">Empresa</span>
+          </div>
+          <div class="progress-line" [class.active]="currentStep > 3"></div>
+          <div 
+            class="progress-step"
+            [class.active]="currentStep >= 4"
+          >
+            <div class="step-number">4</div>
+            <span class="step-label">Endereço</span>
           </div>
         </div>
       </div>
 
       <!-- Formulário Multi-Step -->
       <form (ngSubmit)="onSubmit()" class="cadastro-form">
-        <!-- Step 1: Dados Pessoais -->
+        <!-- Step 1: Dados do Usuário -->
         <div class="form-step" *ngIf="currentStep === 1">
           <div class="form-group">
             <label for="name">Nome completo *</label>
@@ -119,62 +128,8 @@
           </button>
         </div>
 
-        <!-- Step 2: Dados da Empresa -->
+        <!-- Step 2: Senha -->
         <div class="form-step" *ngIf="currentStep === 2">
-          <div class="form-group">
-            <label for="companyName">Nome da empresa *</label>
-            <input
-              type="text"
-              id="companyName"
-              name="companyName"
-              [(ngModel)]="companyName"
-              placeholder="Minha Empresa LTDA"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="companySize">Tamanho da empresa *</label>
-            <select
-              id="companySize"
-              name="companySize"
-              [(ngModel)]="companySize"
-              required
-            >
-              <option value="" disabled selected>Selecione o tamanho</option>
-              <option *ngFor="let size of companySizes" [value]="size.value">
-                {{ size.label }}
-              </option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="segment">Segmento *</label>
-            <select
-              id="segment"
-              name="segment"
-              [(ngModel)]="segment"
-              required
-            >
-              <option value="" disabled selected>Selecione o segmento</option>
-              <option *ngFor="let seg of segments" [value]="seg">
-                {{ seg }}
-              </option>
-            </select>
-          </div>
-
-          <div class="form-buttons">
-            <button type="button" class="btn-back" (click)="previousStep()">
-              Voltar
-            </button>
-            <button type="button" class="btn-next" (click)="nextStep()">
-              Próximo
-            </button>
-          </div>
-        </div>
-
-        <!-- Step 3: Senha -->
-        <div class="form-step" *ngIf="currentStep === 3">
           <div class="form-group">
             <label for="password">Senha *</label>
             <div class="password-input">
@@ -220,6 +175,183 @@
             </div>
           </div>
 
+          <div class="form-buttons">
+            <button type="button" class="btn-back" (click)="previousStep()">
+              Voltar
+            </button>
+            <button type="button" class="btn-next" (click)="nextStep()">
+              Próximo
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Dados da Empresa -->
+        <div class="form-step" *ngIf="currentStep === 3">
+          <div class="form-group">
+            <label for="nomeFantasia">Nome Fantasia *</label>
+            <input
+              type="text"
+              id="nomeFantasia"
+              name="nomeFantasia"
+              [(ngModel)]="nomeFantasia"
+              placeholder="Minha Empresa"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="razaoSocial">Razão Social *</label>
+            <input
+              type="text"
+              id="razaoSocial"
+              name="razaoSocial"
+              [(ngModel)]="razaoSocial"
+              placeholder="Minha Empresa LTDA"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="cpfCnpj">CPF ou CNPJ *</label>
+            <input
+              type="text"
+              id="cpfCnpj"
+              name="cpfCnpj"
+              [(ngModel)]="cpfCnpj"
+              (input)="formatCpfCnpj($event)"
+              placeholder="000.000.000-00 ou 00.000.000/0000-00"
+              maxlength="18"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="numero">Número *</label>
+            <input
+              type="text"
+              id="numero"
+              name="numero"
+              [(ngModel)]="numero"
+              placeholder="Número de registro"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="segmento">Segmentação *</label>
+            <select
+              id="segmento"
+              name="segmento"
+              [(ngModel)]="segmento"
+              required
+            >
+              <option value="" disabled selected>Selecione o segmento</option>
+              <option *ngFor="let seg of segments" [value]="seg">
+                {{ seg }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-buttons">
+            <button type="button" class="btn-back" (click)="previousStep()">
+              Voltar
+            </button>
+            <button type="button" class="btn-next" (click)="nextStep()">
+              Próximo
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 4: Endereço -->
+        <div class="form-step" *ngIf="currentStep === 4">
+          <div class="form-group">
+            <label for="pais">País *</label>
+            <input
+              type="text"
+              id="pais"
+              name="pais"
+              [(ngModel)]="pais"
+              placeholder="Brasil"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="estado">Estado *</label>
+            <select
+              id="estado"
+              name="estado"
+              [(ngModel)]="estado"
+              required
+            >
+              <option value="" disabled selected>Selecione o estado</option>
+              <option *ngFor="let uf of estados" [value]="uf">
+                {{ uf }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="cidade">Cidade *</label>
+            <input
+              type="text"
+              id="cidade"
+              name="cidade"
+              [(ngModel)]="cidade"
+              placeholder="São Paulo"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="rua">Rua *</label>
+            <input
+              type="text"
+              id="rua"
+              name="rua"
+              [(ngModel)]="rua"
+              placeholder="Av. Paulista"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="bairro">Bairro *</label>
+            <input
+              type="text"
+              id="bairro"
+              name="bairro"
+              [(ngModel)]="bairro"
+              placeholder="Centro"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="cep">CEP *</label>
+            <input
+              type="text"
+              id="cep"
+              name="cep"
+              [(ngModel)]="cep"
+              (input)="formatCep($event)"
+              placeholder="00000-000"
+              maxlength="9"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="complemento">Complemento</label>
+            <input
+              type="text"
+              id="complemento"
+              name="complemento"
+              [(ngModel)]="complemento"
+              placeholder="Apto, sala, etc. (opcional)"
+            />
+          </div>
+
           <div class="form-group-checkbox">
             <label class="checkbox-container">
               <input
@@ -240,7 +372,7 @@
               Voltar
             </button>
             <button type="submit" class="btn-submit">
-              Criar conta
+              Criar conta e iniciar teste grátis
             </button>
           </div>
         </div>

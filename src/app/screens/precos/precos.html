@@ -7,24 +7,11 @@
       <span class="hero-tag">PREÇOS</span>
       <h1>Planos que cabem no seu bolso</h1>
       <p>
-        Escolha o plano ideal para o tamanho e necessidades do seu negócio. 
+        Escolha o plano ideal para seu negócio. 
         Teste grátis por 14 dias, sem cartão de crédito.
       </p>
-
-      <!-- Billing Toggle -->
-      <div class="billing-toggle">
-        <span [class.active]="billingCycle === 'monthly'">Mensal</span>
-        <label class="switch">
-          <input 
-            type="checkbox" 
-            [checked]="billingCycle === 'yearly'"
-            (change)="toggleBillingCycle()"
-          />
-          <span class="slider"></span>
-        </label>
-        <span [class.active]="billingCycle === 'yearly'">
-          Anual <span class="discount-badge">Economize 20%</span>
-        </span>
+      <div class="trial-badge">
+        🎉 14 dias de teste gratuito em todos os planos!
       </div>
     </div>
   </section>
@@ -37,7 +24,7 @@
         *ngFor="let plan of plans"
         [class.popular]="plan.popular"
       >
-        <div class="popular-badge" *ngIf="plan.popular">Mais Popular</div>
+        <div class="popular-badge" *ngIf="plan.popular">Melhor Custo-Benefício</div>
         
         <div class="plan-header">
           <div class="plan-icon" [style.background]="plan.color">
@@ -50,111 +37,88 @@
         <div class="plan-price">
           <div class="price-amount">
             <span class="currency">R$</span>
-            <span class="amount">{{ getPrice(plan) }}</span>
-            <span class="period">/{{ billingCycle === 'monthly' ? 'mês' : 'ano' }}</span>
+            <span class="amount">{{ plan.price.toFixed(2) }}</span>
+            <span class="period">/{{ plan.period }}</span>
           </div>
-          <p class="price-info" *ngIf="billingCycle === 'yearly'">
-            R$ {{ (getPrice(plan) / 12).toFixed(2) }} por mês
+          <p class="price-info" *ngIf="plan.savingsText">
+            {{ plan.savingsText }}
+          </p>
+          <p class="price-monthly" *ngIf="plan.period !== 'mês'">
+            {{ getMonthlyEquivalent(plan) }}
           </p>
         </div>
 
-        <ul class="features-list">
-          <li *ngFor="let feature of plan.features">
-            <span class="check-icon">✓</span>
-            {{ feature }}
-          </li>
-        </ul>
+        <div class="features-section">
+          <h4 class="features-title">Todos os recursos incluídos:</h4>
+          <ul class="features-list">
+            <li *ngFor="let feature of features">
+              <span class="check-icon">✓</span>
+              {{ feature }}
+            </li>
+          </ul>
+        </div>
 
         <button 
           class="btn-select-plan" 
           [style.background]="plan.color"
           (click)="selectPlan(plan.name)"
         >
-          {{ plan.popular ? 'Começar Agora' : 'Selecionar Plano' }}
+          Começar Teste Grátis
         </button>
       </div>
     </div>
   </section>
 
-  <!-- Comparison Table -->
-  <section class="comparison-section">
-    <div class="comparison-content">
-      <h2>Compare os Planos</h2>
-      <p class="comparison-subtitle">Veja todos os recursos em detalhes</p>
-
-      <div class="comparison-table-wrapper">
-        <table class="comparison-table">
-          <thead>
-            <tr>
-              <th>Recursos</th>
-              <th>Starter</th>
-              <th class="highlight">Professional</th>
-              <th>Enterprise</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Usuários</td>
-              <td>Até 3</td>
-              <td class="highlight">Até 15</td>
-              <td>Ilimitados</td>
-            </tr>
-            <tr>
-              <td>Empresas</td>
-              <td>1</td>
-              <td class="highlight">3</td>
-              <td>Ilimitadas</td>
-            </tr>
-            <tr>
-              <td>Transações mensais</td>
-              <td>100</td>
-              <td class="highlight">Ilimitadas</td>
-              <td>Ilimitadas</td>
-            </tr>
-            <tr>
-              <td>Dashboard</td>
-              <td>Básico</td>
-              <td class="highlight">Avançado</td>
-              <td>Personalizado</td>
-            </tr>
-            <tr>
-              <td>Relatórios</td>
-              <td>Básicos</td>
-              <td class="highlight">Avançados</td>
-              <td>Customizados</td>
-            </tr>
-            <tr>
-              <td>Integrações bancárias</td>
-              <td>❌</td>
-              <td class="highlight">✅</td>
-              <td>✅ Premium</td>
-            </tr>
-            <tr>
-              <td>Automações</td>
-              <td>❌</td>
-              <td class="highlight">✅</td>
-              <td>✅ Avançadas</td>
-            </tr>
-            <tr>
-              <td>API Access</td>
-              <td>❌</td>
-              <td class="highlight">✅</td>
-              <td>✅ Dedicada</td>
-            </tr>
-            <tr>
-              <td>Suporte</td>
-              <td>Email</td>
-              <td class="highlight">Prioritário</td>
-              <td>24/7 + Gerente</td>
-            </tr>
-            <tr>
-              <td>Backup</td>
-              <td>Semanal</td>
-              <td class="highlight">Diário</td>
-              <td>Tempo real</td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- Features Highlight -->
+  <section class="features-highlight">
+    <div class="features-content">
+      <h2>Todos os planos incluem</h2>
+      <div class="features-grid-detailed">
+        <div class="feature-item">
+          <div class="feature-icon">💰</div>
+          <h4>Fluxo de Caixa</h4>
+          <p>Controle completo de entradas e saídas</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">👥</div>
+          <h4>Gestão de Comissões</h4>
+          <p>Gerenciamento automático para vendedores</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">📦</div>
+          <h4>Controle de Estoque</h4>
+          <p>Acompanhamento em tempo real</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🔔</div>
+          <h4>Notificações</h4>
+          <p>Alertas importantes instantâneos</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🤖</div>
+          <h4>Cobrança Automatizada</h4>
+          <p>Envio automático de boletos e lembretes</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">💳</div>
+          <h4>Crediário Próprio</h4>
+          <p>Sistema completo de parcelamento</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">📊</div>
+          <h4>Análise com IA</h4>
+          <p>Previsões e insights inteligentes</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">📝</div>
+          <h4>Contas a Pagar</h4>
+          <p>Gestão completa de despesas</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">💾</div>
+          <h4>Backup Automático</h4>
+          <p>Seus dados sempre seguros</p>
+        </div>
       </div>
     </div>
   </section>
@@ -176,14 +140,13 @@
   <!-- CTA Section -->
   <section class="cta-precos">
     <div class="cta-content">
-      <h2>Ainda tem dúvidas?</h2>
+      <h2>Comece seu teste gratuito agora</h2>
       <p>
-        Nossa equipe está pronta para ajudar você a escolher o melhor plano 
-        para o seu negócio
+        14 dias para testar todas as funcionalidades, sem cartão de crédito
       </p>
       <div class="cta-buttons">
-        <button class="btn-primary">Falar com Vendas</button>
-        <button class="btn-secondary">Agendar Demo</button>
+        <button class="btn-primary" routerLink="/cadastro">Iniciar Teste Grátis</button>
+        <button class="btn-secondary" routerLink="/contato">Falar com Vendas</button>
       </div>
     </div>
   </section>

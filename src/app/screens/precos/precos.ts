@@ -9,114 +9,111 @@ import { CommonModule } from '@angular/common';
   styleUrl: './precos.css',
 })
 export class Precos {
-  billingCycle: 'monthly' | 'yearly' = 'monthly';
-
   plans = [
     {
-      name: 'Starter',
-      description: 'Perfeito para pequenos negócios começando',
-      monthlyPrice: 49,
-      yearlyPrice: 470,
-      icon: '🚀',
+      name: 'Mensal',
+      description: 'Pagamento mensal sem compromisso',
+      price: 59.9,
+      period: 'mês',
+      icon: '📅',
       color: '#10b981',
       popular: false,
-      features: [
-        'Até 3 usuários',
-        '1 empresa',
-        'Dashboard básico',
-        'Fluxo de caixa',
-        'Relatórios básicos',
-        'Suporte por email',
-        '100 transações/mês',
-        'Backup semanal'
-      ]
     },
     {
-      name: 'Professional',
-      description: 'Ideal para empresas em crescimento',
-      monthlyPrice: 149,
-      yearlyPrice: 1430,
-      icon: '💼',
+      name: 'Trimestral',
+      description: 'Economize pagando a cada 3 meses',
+      price: 169.9,
+      period: 'trimestre',
+      savingsText: 'Economize R$ 9,70',
+      icon: '📊',
       color: '#2563eb',
-      popular: true,
-      features: [
-        'Até 15 usuários',
-        '3 empresas',
-        'Dashboard avançado',
-        'Fluxo de caixa projetado',
-        'Relatórios avançados',
-        'Suporte prioritário',
-        'Transações ilimitadas',
-        'Backup diário',
-        'Automações',
-        'Integrações bancárias',
-        'API access'
-      ]
+      popular: false,
     },
     {
-      name: 'Enterprise',
-      description: 'Para grandes empresas com necessidades complexas',
-      monthlyPrice: 399,
-      yearlyPrice: 3830,
-      icon: '🏢',
+      name: 'Semestral',
+      description: 'Melhor custo-benefício para 6 meses',
+      price: 329.9,
+      period: 'semestre',
+      savingsText: 'Economize R$ 29,50',
+      icon: '💼',
       color: '#7c3aed',
+      popular: true,
+    },
+    {
+      name: 'Anual',
+      description: 'Máxima economia com plano anual',
+      price: 609.9,
+      period: 'ano',
+      savingsText: 'Economize R$ 108,90',
+      icon: '🏆',
+      color: '#f59e0b',
       popular: false,
-      features: [
-        'Usuários ilimitados',
-        'Empresas ilimitadas',
-        'Dashboard personalizado',
-        'Análise preditiva com IA',
-        'Relatórios customizados',
-        'Suporte 24/7',
-        'Transações ilimitadas',
-        'Backup em tempo real',
-        'Automações avançadas',
-        'Integrações premium',
-        'API dedicada',
-        'Gerente de conta dedicado',
-        'Treinamento personalizado',
-        'SLA garantido'
-      ]
-    }
+    },
+  ];
+
+  features = [
+    'Fluxo de caixa completo',
+    'Gerenciamento de comissões para vendedores',
+    'Controle de estoque',
+    'Notificações em tempo real',
+    'Cobrança automatizada',
+    'Sistema de crediário próprio',
+    'Análise preditiva com IA',
+    'Gerenciamento de contas a pagar',
+    'Serviço de backup automático',
+    'Suporte técnico',
+    'Atualizações gratuitas',
+    '14 dias de teste grátis',
   ];
 
   faqs = [
     {
       question: 'Posso mudar de plano a qualquer momento?',
-      answer: 'Sim! Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. As mudanças serão refletidas no próximo ciclo de cobrança.'
+      answer:
+        'Sim! Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. As mudanças serão refletidas no próximo ciclo de cobrança.',
     },
     {
       question: 'Existe período de teste gratuito?',
-      answer: 'Sim, oferecemos 14 dias de teste gratuito em todos os planos, sem necessidade de cartão de crédito.'
+      answer:
+        'Sim, oferecemos 14 dias de teste gratuito com acesso completo a todas as funcionalidades, sem necessidade de cartão de crédito.',
     },
     {
-      question: 'Como funciona o pagamento anual?',
-      answer: 'No plano anual, você economiza aproximadamente 20% em relação ao plano mensal. O pagamento é feito uma vez por ano.'
+      question: 'Como funciona o pagamento?',
+      answer:
+        'O pagamento é feito de acordo com o plano escolhido: mensal, trimestral, semestral ou anual. Aceitamos cartão de crédito, débito e PIX.',
     },
     {
       question: 'Posso cancelar a qualquer momento?',
-      answer: 'Sim, você pode cancelar sua assinatura a qualquer momento sem multas ou taxas adicionais.'
+      answer:
+        'Sim, você pode cancelar sua assinatura a qualquer momento sem multas ou taxas adicionais.',
     },
     {
-      question: 'Vocês oferecem desconto para ONGs?',
-      answer: 'Sim! Oferecemos descontos especiais para ONGs e instituições sem fins lucrativos. Entre em contato conosco.'
+      question: 'Quantos usuários posso cadastrar?',
+      answer: 'Todos os planos permitem cadastro de usuários ilimitados dentro da sua empresa.',
     },
     {
-      question: 'O que acontece se eu exceder os limites?',
-      answer: 'Vamos notificá-lo antes de atingir os limites. Você pode fazer upgrade do plano ou adicionar recursos conforme necessário.'
-    }
+      question: 'O que está incluído em todos os planos?',
+      answer:
+        'Todos os planos incluem: fluxo de caixa, gerenciamento de comissões, controle de estoque, notificações, cobrança automatizada, crediário, IA, contas a pagar e backup.',
+    },
   ];
-
-  toggleBillingCycle() {
-    this.billingCycle = this.billingCycle === 'monthly' ? 'yearly' : 'monthly';
-  }
-
-  getPrice(plan: any): number {
-    return this.billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice;
-  }
 
   selectPlan(planName: string) {
     console.log(`Selected plan: ${planName}`);
-    // Implementar lógica de seleção de plano
+    alert(`Você selecionou o plano ${planName}. Redirecionando para o cadastro...`);
+    // Implementar lógica de seleção de plano e redirecionamento
+  }
+
+  getMonthlyEquivalent(plan: any): string {
+    if (plan.period === 'mês') return '';
+
+    const months: Record<string, number> = {
+      trimestre: 3,
+      semestre: 6,
+      ano: 12,
+    };
+
+    const monthly = (plan.price / months[plan.period]).toFixed(2);
+    return `R$ ${monthly}/mês`;
   }
 }
