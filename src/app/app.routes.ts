@@ -12,33 +12,46 @@ export const routes: Routes = [
   {
     path: '',
     component: Home,
+    title: 'Cash in Box - Gestão Financeira Empresarial'
   },
   {
     path: 'login',
     component: Login,
+    title: 'Login - Cash in Box'
   },
   {
     path: 'cadastro',
     component: Cadastro,
+    title: 'Cadastro - Cash in Box'
   },
   {
     path: 'plataforma',
     component: Plataforma,
+    title: 'Plataforma - Cash in Box'
   },
   {
     path: 'download',
     component: Download,
+    title: 'Download - Cash in Box'
   },
   {
     path: 'precos',
     component: Precos,
+    title: 'Preços - Cash in Box'
   },
   {
     path: 'contato',
     component: Contato,
+    title: 'Contato - Cash in Box'
   },
   {
     path: 'modulos',
     component: Modulos,
+    title: 'Módulos - Cash in Box'
   },
+  {
+    path: '**',
+    redirectTo: '',
+    pathMatch: 'full'
+  }
 ];

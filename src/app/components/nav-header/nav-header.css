@@ -1,3 +1,119 @@
+#nav-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  height: 70px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+#nav-header.scrolled {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+#logo-header {
+  height: 40px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+#logo-header:hover {
+  transform: scale(1.05);
+}
+
+.section-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.section-dropdown {
+  display: flex;
+  gap: 8px;
+}
+
+.section-dropdown p {
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.section-dropdown p::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: #2563eb;
+  transition: width 0.3s ease;
+}
+
+.section-dropdown p:hover {
+  background: #f3f4f6;
+  color: #2563eb;
+}
+
+.section-dropdown p.active {
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.section-dropdown p.active::after {
+  width: 80%;
+}
+
+.section-right > div:last-of-type {
+  display: flex;
+  gap: 12px;
+}
+
+#button-login,
+#button-cadastro {
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+#button-login {
+  background: transparent;
+  border: 2px solid #2563eb;
+  color: #2563eb;
+}
+
+#button-login:hover {
+  background: #eff6ff;
+  transform: translateY(-2px);
+}
+
+#button-cadastro {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+#button-cadastro:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
+
 /* Menu Mobile */
 .mobile-menu-toggle {
   display: none;
@@ -7,6 +123,11 @@
   cursor: pointer;
   padding: 8px;
   color: #374151;
+  transition: all 0.2s ease;
+}
+
+.mobile-menu-toggle:hover {
+  color: #2563eb;
 }
 
 .mobile-menu {
@@ -17,15 +138,15 @@
   right: 0;
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  z-index: 999;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease;
 }
 
 .mobile-menu.open {
-  max-height: 400px;
+  max-height: 500px;
   padding: 20px 0;
 }
 
@@ -42,13 +163,14 @@
   color: #374151;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-bottom: 1px solid #f3f4f6;
+  border-left: 4px solid transparent;
 }
 
 .mobile-menu-links p:hover,
 .mobile-menu-links p.active {
   background: #f9fafb;
   color: #2563eb;
+  border-left-color: #2563eb;
 }
 
 .mobile-menu-buttons {
@@ -56,6 +178,8 @@
   flex-direction: column;
   gap: 12px;
   padding: 20px 32px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 12px;
 }
 
 .mobile-menu-buttons button {
@@ -75,10 +199,20 @@
   margin-right: 0;
 }
 
+.mobile-menu-buttons #button-login:hover {
+  background: #eff6ff;
+}
+
 .mobile-menu-buttons #button-cadastro {
-  background: #2563eb;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   border: none;
   color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.mobile-menu-buttons #button-cadastro:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
 }
 
 /* Responsivo */
@@ -99,18 +233,29 @@
     gap: 16px;
   }
 
-  .section-right > div {
+  .section-right > div:last-of-type {
     display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  #nav-header {
+    padding: 0 20px;
   }
 }
 
 @media (max-width: 480px) {
   #nav-header {
     padding: 0 16px;
+    height: 64px;
   }
 
   #logo-header {
     height: 32px;
+  }
+
+  .mobile-menu {
+    top: 64px;
   }
 
   .mobile-menu-links p {
@@ -120,5 +265,9 @@
 
   .mobile-menu-buttons {
     padding: 16px 24px;
+  }
+
+  .mobile-menu-toggle {
+    font-size: 24px;
   }
 }

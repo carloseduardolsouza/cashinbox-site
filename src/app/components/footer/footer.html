@@ -72,14 +72,22 @@
           <h3>Fique por dentro das novidades</h3>
           <p>Receba dicas, atualizações e ofertas exclusivas diretamente no seu e-mail</p>
         </div>
-        <form class="newsletter-form">
+        <form class="newsletter-form" (ngSubmit)="onNewsletterSubmit($event)">
           <input 
             type="email" 
             placeholder="Seu melhor e-mail" 
             class="newsletter-input"
+            [(ngModel)]="newsletterEmail"
+            name="newsletterEmail"
+            [disabled]="isSubmitting"
+            required
           />
-          <button type="submit" class="newsletter-button">
-            Inscrever-se
+          <button 
+            type="submit" 
+            class="newsletter-button"
+            [disabled]="isSubmitting"
+          >
+            {{ isSubmitting ? 'Enviando...' : 'Inscrever-se' }}
           </button>
         </form>
       </div>

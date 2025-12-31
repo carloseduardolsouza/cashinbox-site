@@ -1,13 +1,19 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-beta-popup',
   imports: [CommonModule],
   template: `
-    <div class="popup-overlay" (click)="close()">
-      <div class="popup-content" (click)="$event.stopPropagation()">
-        <button class="popup-close" (click)="close()">✕</button>
+    <div class="popup-overlay" (click)="close()" [@fadeIn]>
+      <div class="popup-content" (click)="$event.stopPropagation()" [@slideUp]>
+        <button 
+          class="popup-close" 
+          (click)="close()"
+          aria-label="Fechar popup"
+        >
+          ✕
+        </button>
         
         <div class="popup-icon">🚀</div>
         
@@ -71,6 +77,7 @@ import { CommonModule } from '@angular/common';
       z-index: 10000;
       padding: 20px;
       animation: fadeIn 0.3s ease;
+      backdrop-filter: blur(4px);
     }
 
     @keyframes fadeIn {
@@ -87,6 +94,8 @@ import { CommonModule } from '@angular/common';
       position: relative;
       animation: slideUp 0.3s ease;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     @keyframes slideUp {
@@ -121,12 +130,19 @@ import { CommonModule } from '@angular/common';
     .popup-close:hover {
       background: #e5e7eb;
       color: #374151;
+      transform: rotate(90deg);
     }
 
     .popup-icon {
       font-size: 64px;
       text-align: center;
       margin-bottom: 20px;
+      animation: bounce 1s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     h2 {
@@ -173,6 +189,7 @@ import { CommonModule } from '@angular/common';
       padding: 12px;
       border-radius: 8px;
       margin: 8px 0;
+      border-left: 4px solid #f59e0b;
     }
 
     .check {
@@ -268,6 +285,11 @@ import { CommonModule } from '@angular/common';
 export class BetaPopup {
   @Output() onAccept = new EventEmitter<void>();
   @Output() onClose = new EventEmitter<void>();
+
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscapeKey(event: KeyboardEvent) {
+    this.close();
+  }
 
   accept() {
     this.onAccept.emit();

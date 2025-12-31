@@ -1,4 +1,4 @@
-<div id="nav-header">
+<div id="nav-header" [class.scrolled]="isScrolled">
   <img 
     src="../../../assets/Logo-CashInBox-icon-tipografia.png" 
     alt="logo cash in box" 
@@ -8,19 +8,54 @@
 
   <div class="section-right">
     <div class="section-dropdown">
-      <p routerLink="/plataforma" routerLinkActive="active">Plataforma</p>
-      <p routerLink="/modulos" routerLinkActive="active">Módulos</p>
-      <p routerLink="/download" routerLinkActive="active">Download</p>
-      <p routerLink="/precos" routerLinkActive="active">Preços</p>
-      <p routerLink="/contato" routerLinkActive="active">Contato</p>
+      <p 
+        routerLink="/plataforma" 
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: false}"
+      >
+        Plataforma
+      </p>
+      <p 
+        routerLink="/modulos" 
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: false}"
+      >
+        Módulos
+      </p>
+      <p 
+        routerLink="/download" 
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: false}"
+      >
+        Download
+      </p>
+      <p 
+        routerLink="/precos" 
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: false}"
+      >
+        Preços
+      </p>
+      <p 
+        routerLink="/contato" 
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: false}"
+      >
+        Contato
+      </p>
     </div>
 
     <div>
       <button id="button-login" (click)="navigateToLogin()">Login</button>
-      <button id="button-cadastro" (click)="navigateToCadastro()">Cadastro</button>
+      <button id="button-cadastro" (click)="navigateToCadastro()">Começar Grátis</button>
     </div>
 
-    <button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+    <button 
+      class="mobile-menu-toggle" 
+      (click)="toggleMobileMenu()"
+      [attr.aria-label]="mobileMenuOpen ? 'Fechar menu' : 'Abrir menu'"
+      [attr.aria-expanded]="mobileMenuOpen"
+    >
       {{ mobileMenuOpen ? '✕' : '☰' }}
     </button>
   </div>
@@ -29,14 +64,59 @@
 <!-- Menu Mobile -->
 <div class="mobile-menu" [class.open]="mobileMenuOpen">
   <div class="mobile-menu-links">
-    <p routerLink="/plataforma" routerLinkActive="active" (click)="closeMobileMenu()">Plataforma</p>
-    <p routerLink="/modulos" routerLinkActive="active" (click)="closeMobileMenu()">Módulos</p>
-    <p routerLink="/download" routerLinkActive="active" (click)="closeMobileMenu()">Download</p>
-    <p routerLink="/precos" routerLinkActive="active" (click)="closeMobileMenu()">Preços</p>
-    <p routerLink="/contato" routerLinkActive="active" (click)="closeMobileMenu()">Contato</p>
+    <p 
+      routerLink="/plataforma" 
+      routerLinkActive="active" 
+      (click)="closeMobileMenu()"
+      [routerLinkActiveOptions]="{exact: false}"
+    >
+      Plataforma
+    </p>
+    <p 
+      routerLink="/modulos" 
+      routerLinkActive="active" 
+      (click)="closeMobileMenu()"
+      [routerLinkActiveOptions]="{exact: false}"
+    >
+      Módulos
+    </p>
+    <p 
+      routerLink="/download" 
+      routerLinkActive="active" 
+      (click)="closeMobileMenu()"
+      [routerLinkActiveOptions]="{exact: false}"
+    >
+      Download
+    </p>
+    <p 
+      routerLink="/precos" 
+      routerLinkActive="active" 
+      (click)="closeMobileMenu()"
+      [routerLinkActiveOptions]="{exact: false}"
+    >
+      Preços
+    </p>
+    <p 
+      routerLink="/contato" 
+      routerLinkActive="active" 
+      (click)="closeMobileMenu()"
+      [routerLinkActiveOptions]="{exact: false}"
+    >
+      Contato
+    </p>
   </div>
   <div class="mobile-menu-buttons">
-    <button id="button-login" (click)="navigateToLogin(); closeMobileMenu()">Login</button>
-    <button id="button-cadastro" (click)="navigateToCadastro(); closeMobileMenu()">Cadastro</button>
+    <button 
+      id="button-login" 
+      (click)="navigateToLogin(); closeMobileMenu()"
+    >
+      Login
+    </button>
+    <button 
+      id="button-cadastro" 
+      (click)="navigateToCadastro(); closeMobileMenu()"
+    >
+      Começar Grátis
+    </button>
   </div>
 </div>
