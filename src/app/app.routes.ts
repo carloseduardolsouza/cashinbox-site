@@ -7,12 +7,13 @@ import { Download } from './screens/download/download';
 import { Precos } from './screens/precos/precos';
 import { Contato } from './screens/contato/contato';
 import { Modulos } from './screens/modulos/modulos';
+import { Dashboard } from './screens/dashboard/dashboard';
 
 export const routes: Routes = [
   {
     path: '',
     component: Home,
-    title: 'Cash in Box - Gestão Financeira Empresarial'
+    title: 'Cash in Box - Gestão Financeira Empresarial + CRM Inteligente'
   },
   {
     path: 'login',
@@ -23,6 +24,11 @@ export const routes: Routes = [
     path: 'cadastro',
     component: Cadastro,
     title: 'Cadastro - Cash in Box'
+  },
+  {
+    path: 'dashboard',
+    component: Dashboard,
+    title: 'Meu Painel - Cash in Box'
   },
   {
     path: 'plataforma',

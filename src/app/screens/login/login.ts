@@ -28,8 +28,15 @@ export class Login {
       rememberMe: this.rememberMe 
     });
     
-    // Aqui você implementará a lógica de autenticação
-    alert('Login realizado com sucesso! (Funcionalidade em desenvolvimento)');
+    // Simular login bem-sucedido
+    // Aqui você implementará a lógica real de autenticação
+    localStorage.setItem('userLoggedIn', 'true');
+    localStorage.setItem('userEmail', this.email);
+    
+    alert('Login realizado com sucesso!');
+    
+    // Redirecionar para o dashboard
+    this.router.navigate(['/dashboard']);
   }
 
   togglePasswordVisibility() {

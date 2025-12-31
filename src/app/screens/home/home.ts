@@ -14,7 +14,6 @@ export class Home implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    // Scroll para o topo ao carregar a página
     window.scrollTo(0, 0);
   }
 
