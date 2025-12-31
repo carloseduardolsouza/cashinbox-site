@@ -6,6 +6,7 @@ import { Plataforma } from './screens/plataforma/plataforma';
 import { Download } from './screens/download/download';
 import { Precos } from './screens/precos/precos';
 import { Contato } from './screens/contato/contato';
+import { Modulos } from './screens/modulos/modulos';
 
 export const routes: Routes = [
   {
@@ -35,5 +36,9 @@ export const routes: Routes = [
   {
     path: 'contato',
     component: Contato,
+  },
+  {
+    path: 'modulos',
+    component: Modulos,
   },
 ];

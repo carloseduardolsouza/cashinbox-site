@@ -1,0 +1,73 @@
+<app-nav-header></app-nav-header>
+
+<div class="modulos-container">
+  <!-- Hero Section -->
+  <section class="hero-modulos">
+    <div class="hero-content">
+      <span class="hero-tag">MÓDULOS ESPECIALIZADOS</span>
+      <h1>Soluções sob medida para seu negócio</h1>
+      <p>
+        Módulos específicos desenvolvidos para atender as necessidades únicas 
+        de cada segmento. Escolha o seu e potencialize sua gestão.
+      </p>
+      <div class="beta-badge">
+        🚀 Todos os módulos em fase Beta - Participe do desenvolvimento!
+      </div>
+    </div>
+  </section>
+
+  <!-- Modules Grid -->
+  <section class="modules-section">
+    <div class="modules-grid">
+      <div 
+        class="module-card" 
+        *ngFor="let module of modules"
+        (click)="selectModule(module.id, module.name)"
+      >
+        <div class="module-status">{{ module.status }}</div>
+        
+        <div class="module-icon" [style.background]="module.color">
+          {{ module.icon }}
+        </div>
+
+        <h3>{{ module.name }}</h3>
+        <p class="module-description">{{ module.description }}</p>
+
+        <div class="module-features">
+          <h4>Recursos Principais:</h4>
+          <ul>
+            <li *ngFor="let feature of module.features">
+              <span class="check-icon">✓</span>
+              {{ feature }}
+            </li>
+          </ul>
+        </div>
+
+        <button class="btn-module" [style.background]="module.color">
+          Quero Testar Este Módulo
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-modulos">
+    <div class="cta-content">
+      <h2>Não encontrou seu segmento?</h2>
+      <p>
+        Entre em contato conosco! Podemos desenvolver um módulo 
+        personalizado especificamente para suas necessidades.
+      </p>
+      <button class="btn-contact" routerLink="/contato">
+        Solicitar Módulo Personalizado
+      </button>
+    </div>
+  </section>
+</div>
+
+<!-- Beta Popup -->
+<app-beta-popup 
+  *ngIf="showBetaPopup"
+  (onAccept)="onBetaAccept()"
+  (onClose)="onBetaClose()"
+></app-beta-popup>

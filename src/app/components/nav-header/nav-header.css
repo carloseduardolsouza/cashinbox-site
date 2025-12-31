@@ -1,101 +1,84 @@
-#nav-header {
-  height: 70px;
-  padding: 0 32px;
+/* Menu Mobile */
+.mobile-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 8px;
+  color: #374151;
+}
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
 }
 
-/* Logo */
-#logo-header {
-  height: 40px;
-  cursor: pointer;
+.mobile-menu.open {
+  max-height: 400px;
+  padding: 20px 0;
 }
 
-/* Lado direito */
-.section-right {
+.mobile-menu-links {
   display: flex;
-  align-items: center;
-  gap: 32px;
+  flex-direction: column;
+  gap: 0;
 }
 
-/* Menu central */
-.section-dropdown {
-  display: flex;
-  gap: 24px;
-}
-
-.section-dropdown p {
-  font-size: 15px;
+.mobile-menu-links p {
+  padding: 16px 32px;
+  font-size: 16px;
   font-weight: 500;
   color: #374151;
   cursor: pointer;
-  position: relative;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f3f4f6;
 }
 
-.section-dropdown p.active {
+.mobile-menu-links p:hover,
+.mobile-menu-links p.active {
+  background: #f9fafb;
   color: #2563eb;
 }
 
-/* underline animado */
-.section-dropdown p::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -4px;
-  width: 0%;
-  height: 2px;
-  background: #2563eb;
-  transition: 0.3s ease;
+.mobile-menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 32px;
 }
 
-.section-dropdown p:hover::after,
-.section-dropdown p.active::after {
+.mobile-menu-buttons button {
   width: 100%;
-}
-
-.section-dropdown p:hover {
-  color: #2563eb;
-}
-
-/* Botões */
-.section-right button {
-  padding: 8px 18px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-/* Login */
-#button-login {
+.mobile-menu-buttons #button-login {
   background: transparent;
-  border: 1px solid #2563eb;
+  border: 2px solid #2563eb;
   color: #2563eb;
-  margin-right: 10px;
+  margin-right: 0;
 }
 
-#button-login:hover {
-  background: rgba(37, 99, 235, 0.05);
-}
-
-/* Cadastro */
-#button-cadastro {
+.mobile-menu-buttons #button-cadastro {
   background: #2563eb;
   border: none;
   color: #ffffff;
-}
-
-#button-cadastro:hover {
-  background: #1e40af;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
 
 /* Responsivo */
@@ -104,8 +87,20 @@
     display: none;
   }
 
+  .mobile-menu-toggle {
+    display: block;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+
   .section-right {
     gap: 16px;
+  }
+
+  .section-right > div {
+    display: none;
   }
 }
 
@@ -118,12 +113,12 @@
     height: 32px;
   }
 
-  .section-right button {
-    padding: 6px 14px;
-    font-size: 13px;
+  .mobile-menu-links p {
+    padding: 14px 24px;
+    font-size: 15px;
   }
 
-  #button-login {
-    margin-right: 6px;
+  .mobile-menu-buttons {
+    padding: 16px 24px;
   }
 }

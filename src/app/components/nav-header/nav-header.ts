@@ -8,6 +8,8 @@ import { Router, RouterModule } from '@angular/router';
   styleUrl: './nav-header.css',
 })
 export class NavHeader {
+  mobileMenuOpen = false;
+
   constructor(private router: Router) {}
 
   navigateToLogin() {
@@ -20,5 +22,13 @@ export class NavHeader {
 
   navigateToHome() {
     this.router.navigate(['/']);
+  }
+
+  toggleMobileMenu() {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  closeMobileMenu() {
+    this.mobileMenuOpen = false;
   }
 }
