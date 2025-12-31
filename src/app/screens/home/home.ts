@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { NavHeader } from '../../components/nav-header/nav-header';
 import { Footer } from '../../components/footer/footer';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -11,10 +11,19 @@ import { CommonModule } from '@angular/common';
   styleUrl: './home.css',
 })
 export class Home implements OnInit {
-  constructor(private router: Router) {}
+  private isBrowser: boolean;
+
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit() {
-    window.scrollTo(0, 0);
+    if (this.isBrowser) {
+      window.scrollTo(0, 0);
+    }
   }
 
   startFreeTrial() {
@@ -38,6 +47,8 @@ export class Home implements OnInit {
   }
 
   scrollToSection(sectionId: string) {
+    if (!this.isBrowser) return;
+    
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });

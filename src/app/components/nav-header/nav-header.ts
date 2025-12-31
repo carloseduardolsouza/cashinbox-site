@@ -1,6 +1,6 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-nav-header',
@@ -11,29 +11,41 @@ import { CommonModule } from '@angular/common';
 export class NavHeader implements OnInit {
   mobileMenuOpen = false;
   isScrolled = false;
+  private isBrowser: boolean;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit() {
-    // Verificar scroll inicial
-    this.checkScroll();
+    // Verificar scroll inicial apenas no browser
+    if (this.isBrowser) {
+      this.checkScroll();
+    }
   }
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    this.checkScroll();
+    if (this.isBrowser) {
+      this.checkScroll();
+    }
   }
 
   @HostListener('window:resize', [])
   onWindowResize() {
     // Fechar menu mobile ao redimensionar para desktop
-    if (window.innerWidth > 1024 && this.mobileMenuOpen) {
+    if (this.isBrowser && window.innerWidth > 1024 && this.mobileMenuOpen) {
       this.closeMobileMenu();
     }
   }
 
   private checkScroll() {
-    this.isScrolled = window.scrollY > 10;
+    if (this.isBrowser) {
+      this.isScrolled = window.scrollY > 10;
+    }
   }
 
   navigateToLogin() {
@@ -49,6 +61,8 @@ export class NavHeader implements OnInit {
   }
 
   toggleMobileMenu() {
+    if (!this.isBrowser) return;
+    
     this.mobileMenuOpen = !this.mobileMenuOpen;
     
     // Prevenir scroll quando menu estiver aberto
@@ -60,6 +74,8 @@ export class NavHeader implements OnInit {
   }
 
   closeMobileMenu() {
+    if (!this.isBrowser) return;
+    
     this.mobileMenuOpen = false;
     document.body.style.overflow = '';
   }

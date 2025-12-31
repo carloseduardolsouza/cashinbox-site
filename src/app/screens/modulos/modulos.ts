@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { NavHeader } from '../../components/nav-header/nav-header';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { BetaPopup } from '../../components/beta-popup/beta-popup';
 import { Router, RouterModule } from '@angular/router';
 
@@ -14,6 +14,7 @@ export class Modulos implements OnInit {
   showBetaPopup = false;
   selectedModule: string = '';
   selectedModuleId: string = '';
+  private isBrowser: boolean;
 
   modules = [
     {
@@ -198,11 +199,18 @@ export class Modulos implements OnInit {
     }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit() {
-    // Scroll para o topo ao carregar
-    window.scrollTo(0, 0);
+    // Scroll para o topo ao carregar apenas no browser
+    if (this.isBrowser) {
+      window.scrollTo(0, 0);
+    }
   }
 
   selectModule(moduleId: string, moduleName: string) {
@@ -214,11 +222,13 @@ export class Modulos implements OnInit {
   onBetaAccept() {
     this.showBetaPopup = false;
     
-    // Salvar módulo selecionado no sessionStorage
-    sessionStorage.setItem('selectedModule', JSON.stringify({
-      id: this.selectedModuleId,
-      name: this.selectedModule
-    }));
+    // Salvar módulo selecionado no sessionStorage apenas no browser
+    if (this.isBrowser) {
+      sessionStorage.setItem('selectedModule', JSON.stringify({
+        id: this.selectedModuleId,
+        name: this.selectedModule
+      }));
+    }
     
     alert(`Obrigado por se interessar pelo módulo ${this.selectedModule}! Você será direcionado para o cadastro.`);
     this.router.navigate(['/cadastro']);
