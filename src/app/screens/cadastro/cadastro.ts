@@ -30,6 +30,8 @@ export class Cadastro {
   cpfCnpj: string = '';
   numero: string = '';
   segmento: string = '';
+  user_login: string = '';
+  senha_empresa: string = '';
 
   // Step 4 - Endereço
   pais: string = 'Brasil';
@@ -54,13 +56,37 @@ export class Cadastro {
     'Moda e Vestuário',
     'Automotivo',
     'Agronegócio',
-    'Outros'
+    'Outros',
   ];
 
   estados = [
-    'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
-    'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
-    'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+    'AC',
+    'AL',
+    'AP',
+    'AM',
+    'BA',
+    'CE',
+    'DF',
+    'ES',
+    'GO',
+    'MA',
+    'MT',
+    'MS',
+    'MG',
+    'PA',
+    'PB',
+    'PR',
+    'PE',
+    'PI',
+    'RJ',
+    'RN',
+    'RS',
+    'RO',
+    'RR',
+    'SC',
+    'SP',
+    'SE',
+    'TO',
   ];
 
   constructor(private router: Router) {}
@@ -94,8 +120,13 @@ export class Cadastro {
     }
 
     if (this.currentStep === 3) {
-      if (!this.nomeFantasia || !this.razaoSocial || !this.cpfCnpj || 
-          !this.numero || !this.segmento) {
+      if (
+        !this.nomeFantasia ||
+        !this.razaoSocial ||
+        !this.cpfCnpj ||
+        !this.numero ||
+        !this.segmento
+      ) {
         alert('Por favor, preencha todos os campos obrigatórios da empresa!');
         return;
       }
@@ -112,14 +143,13 @@ export class Cadastro {
     }
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (!this.acceptTerms) {
       alert('Você precisa aceitar os termos de uso!');
       return;
     }
 
-    if (!this.pais || !this.estado || !this.cidade || !this.rua || 
-        !this.bairro || !this.cep) {
+    if (!this.pais || !this.estado || !this.cidade || !this.rua || !this.bairro || !this.cep) {
       alert('Por favor, preencha todos os campos obrigatórios do endereço!');
       return;
     }
@@ -129,14 +159,16 @@ export class Cadastro {
         nome: this.name,
         email: this.email,
         telefone: this.phone,
-        senha: this.password
+        senha: this.password,
       },
       empresa: {
         nomeFantasia: this.nomeFantasia,
         razaoSocial: this.razaoSocial,
         cpfCnpj: this.cpfCnpj,
         numero: this.numero,
-        segmento: this.segmento
+        segmento: this.segmento,
+        user_login: this.user_login,
+        senha: this.senha_empresa,
       },
       endereco: {
         pais: this.pais,
@@ -145,14 +177,52 @@ export class Cadastro {
         rua: this.rua,
         bairro: this.bairro,
         cep: this.cep,
-        complemento: this.complemento
-      }
+        complemento: this.complemento,
+      },
     };
 
-    console.log('Cadastro completo:', cadastroData);
-    alert('Cadastro realizado com sucesso! Você terá 14 dias de teste gratuito.');
+    // Cria o usuario no servidor
+    const user : any = await fetch('https://cashinbox.shop/usuarios', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cadastroData.usuario),
+    });
+
+    console.log(user)
+
+    // Cria a empresa relacionada ao usuario
+    const empresaFormated = {
+      nome_fantasia: cadastroData.empresa.nomeFantasia,
+      user_login: cadastroData.empresa.user_login,
+      senha: cadastroData.empresa.senha,
+      razao_social: cadastroData.empresa.razaoSocial,
+      cpf_cnpj: cadastroData.empresa.cpfCnpj,
+      telefone: cadastroData.empresa.numero,
+      segmento: cadastroData.empresa.segmento,
+      usuario: user.data.id_usuario.id_usuario,
+      endereco: {
+        pais: cadastroData.endereco.pais,
+        estado: cadastroData.endereco.estado,
+        cidade: cadastroData.endereco.cidade,
+        bairro: cadastroData.endereco.bairro,
+        rua: cadastroData.endereco.rua,
+        complemento: cadastroData.endereco.complemento,
+        cep: cadastroData.endereco.cep,
+      }
+    }
+    const empresa = await fetch("https://cashinbox.shop/empresas" , {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(empresaFormated),
     
-    // Aqui você implementará a lógica de cadastro
+    })
+
+    console.log(empresa)
+    console.log(user)
     this.router.navigate(['/login']);
   }
 
@@ -166,7 +236,7 @@ export class Cadastro {
 
   formatPhone(event: any) {
     let value = event.target.value.replace(/\D/g, '');
-    
+
     if (value.length <= 11) {
       value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
       value = value.replace(/(\d)(\d{4})$/, '$1-$2');
@@ -176,7 +246,7 @@ export class Cadastro {
 
   formatCpfCnpj(event: any) {
     let value = event.target.value.replace(/\D/g, '');
-    
+
     if (value.length <= 11) {
       // CPF
       value = value.replace(/(\d{3})(\d)/, '$1.$2');
@@ -189,13 +259,13 @@ export class Cadastro {
       value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
       value = value.replace(/(\d{4})(\d)/, '$1-$2');
     }
-    
+
     this.cpfCnpj = value;
   }
 
   formatCep(event: any) {
     let value = event.target.value.replace(/\D/g, '');
-    
+
     if (value.length <= 8) {
       value = value.replace(/^(\d{5})(\d)/, '$1-$2');
       this.cep = value;
