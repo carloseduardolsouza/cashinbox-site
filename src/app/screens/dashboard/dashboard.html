@@ -39,21 +39,21 @@
         <div 
           class="empresa-item"
           *ngFor="let empresa of empresas"
-          [class.selected]="empresaSelecionada?.id === empresa.id"
+          [class.selected]="empresaSelecionada?.id_empresa === empresa.id_empresa"
           (click)="selecionarEmpresa(empresa)"
         >
           <div class="empresa-icon">🏢</div>
           <div class="empresa-info">
-            <strong>{{ empresa.nomeFantasia }}</strong>
-            <span>{{ empresa.cnpj }}</span>
+            <strong>{{ empresa.nome_fantasia }}</strong>
+            <span>{{ formatCpfCnpj(empresa.cpf_cnpj) }}</span>
           </div>
-          <div class="empresa-status" [ngClass]="getStatusClass(empresa.status)">
-            {{ getStatusLabel(empresa.status) }}
+          <div class="empresa-status" [ngClass]="getStatusClass()">
+            {{ getStatusLabel() }}
           </div>
         </div>
       </div>
 
-      <button class="btn-add-empresa">
+      <button class="btn-add-empresa" routerLink="/cadastro">
         ➕ Adicionar Empresa
       </button>
     </aside>
@@ -65,15 +65,52 @@
         <div class="empresa-header-info">
           <div class="empresa-icon-large">🏢</div>
           <div>
-            <h2>{{ empresaSelecionada.nomeFantasia }}</h2>
-            <p class="razao-social">{{ empresaSelecionada.razaoSocial }}</p>
-            <p class="cnpj">CNPJ: {{ empresaSelecionada.cnpj }}</p>
+            <h2>{{ empresaSelecionada.nome_fantasia }}</h2>
+            <p class="razao-social">{{ empresaSelecionada.razao_social }}</p>
+            <p class="cnpj">{{ formatCpfCnpj(empresaSelecionada.cpf_cnpj) }}</p>
           </div>
         </div>
         <div class="empresa-header-actions">
-          <button class="btn-edit">⚙️ Editar</button>
+          <button class="btn-edit" (click)="editarEmpresa()">⚙️ Editar</button>
         </div>
       </div>
+
+      <!-- Informações da Empresa -->
+      <section class="info-section">
+        <h3 class="section-title">📋 Informações da Empresa</h3>
+        
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-label">Segmento</div>
+            <div class="info-value">{{ empresaSelecionada.segmento }}</div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-label">Telefone</div>
+            <div class="info-value">{{ formatTelefone(empresaSelecionada.telefone) }}</div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-label">E-mail</div>
+            <div class="info-value">{{ empresaSelecionada.email || 'Não informado' }}</div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-label">Inscrição Estadual</div>
+            <div class="info-value">{{ empresaSelecionada.inscricao_estadual }}</div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-label">Data de Cadastro</div>
+            <div class="info-value">{{ formatDate(empresaSelecionada.created_at) }}</div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-label">Último Acesso</div>
+            <div class="info-value">{{ formatDateTime(empresaSelecionada.ultimo_acesso) }}</div>
+          </div>
+        </div>
+      </section>
 
       <!-- Plano Card -->
       <section class="plano-section">
@@ -82,13 +119,13 @@
         <div class="plano-card">
           <div class="plano-header">
             <div class="plano-info">
-              <span class="plano-badge">{{ empresaSelecionada.plano }}</span>
-              <h4>Plano {{ empresaSelecionada.plano }}</h4>
-              <p class="plano-valor">R$ {{ empresaSelecionada.valorPlano.toFixed(2) }}</p>
+              <span class="plano-badge">{{ getPlanoAtual() }}</span>
+              <h4>Plano {{ getPlanoAtual() }}</h4>
+              <p class="plano-valor">R$ {{ getValorPlano().toFixed(2) }}</p>
             </div>
             <div class="plano-status">
-              <div class="status-badge" [ngClass]="getStatusClass(empresaSelecionada.status)">
-                {{ getStatusLabel(empresaSelecionada.status) }}
+              <div class="status-badge" [ngClass]="getStatusClass()">
+                {{ getStatusLabel() }}
               </div>
             </div>
           </div>
@@ -97,23 +134,23 @@
             <div class="vencimento-info">
               <span class="vencimento-label">Próximo Vencimento</span>
               <span class="vencimento-data">
-                {{ empresaSelecionada.dataVencimento | date: 'dd/MM/yyyy' }}
+                {{ getDataVencimento() | date: 'dd/MM/yyyy' }}
               </span>
               <span class="vencimento-dias">
-                {{ getDiasRestantes(empresaSelecionada.dataVencimento) }} dias restantes
+                {{ getDiasRestantes() }} dias restantes
               </span>
             </div>
 
             <div class="vencimento-progress">
               <div 
                 class="progress-bar" 
-                [style.width.%]="(getDiasRestantes(empresaSelecionada.dataVencimento) / 30) * 100"
+                [style.width.%]="(getDiasRestantes() / 30) * 100"
               ></div>
             </div>
           </div>
 
           <div class="plano-actions">
-            <button class="btn-renovar">🔄 Renovar Plano</button>
+            <button class="btn-renovar" (click)="renovarPlano()">🔄 Renovar Plano</button>
             <button class="btn-mudar" (click)="navegarParaPlanos()">
               📊 Mudar de Plano
             </button>
@@ -121,107 +158,18 @@
         </div>
       </section>
 
-      <!-- Módulos Ativos -->
-      <section class="modulos-section">
-        <div class="section-header-modulos">
-          <h3 class="section-title">🎯 Módulos Ativos</h3>
-          <button class="btn-add-modulo" (click)="navegarParaModulos()">
-            ➕ Adicionar Módulo
-          </button>
-        </div>
+    </div>
 
-        <div class="modulos-grid">
-          <div class="modulo-card" *ngFor="let modulo of empresaSelecionada.modulosAtivos">
-            <div class="modulo-icon">
-              <span *ngIf="modulo === 'Farmácia'">💊</span>
-              <span *ngIf="modulo === 'CRM Inteligente'">🎯</span>
-              <span *ngIf="modulo === 'Fluxo de Caixa'">💰</span>
-              <span *ngIf="modulo === 'Supermercado'">🛒</span>
-              <span *ngIf="modulo === 'Estoque'">📦</span>
-            </div>
-            <h4>{{ modulo }}</h4>
-            <p>Em uso</p>
-            <button class="btn-configurar">⚙️ Configurar</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Quick Stats -->
-      <section class="stats-section">
-        <h3 class="section-title">📊 Visão Geral</h3>
-        
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon">💰</div>
-            <div class="stat-info">
-              <span class="stat-label">Faturamento do Mês</span>
-              <span class="stat-value">R$ 45.890,00</span>
-              <span class="stat-change positive">+12.5%</span>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon">👥</div>
-            <div class="stat-info">
-              <span class="stat-label">Clientes Ativos</span>
-              <span class="stat-value">1.234</span>
-              <span class="stat-change positive">+8.3%</span>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon">📈</div>
-            <div class="stat-info">
-              <span class="stat-label">Vendas Hoje</span>
-              <span class="stat-value">87</span>
-              <span class="stat-change positive">+15.2%</span>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon">🎂</div>
-            <div class="stat-info">
-              <span class="stat-label">Mensagens CRM Enviadas</span>
-              <span class="stat-value">342</span>
-              <span class="stat-change positive">+25.0%</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Notificações -->
-      <section class="notificacoes-section">
-        <h3 class="section-title">🔔 Notificações Recentes</h3>
-        
-        <div class="notificacoes-list">
-          <div class="notificacao-item">
-            <div class="notificacao-icon success">✓</div>
-            <div class="notificacao-content">
-              <strong>Mensagens de Aniversário Enviadas</strong>
-              <p>15 clientes receberam mensagens de feliz aniversário hoje</p>
-              <span class="notificacao-time">Há 2 horas</span>
-            </div>
-          </div>
-
-          <div class="notificacao-item">
-            <div class="notificacao-icon info">📊</div>
-            <div class="notificacao-content">
-              <strong>Relatório Mensal Disponível</strong>
-              <p>Seu relatório financeiro de dezembro está pronto</p>
-              <span class="notificacao-time">Há 5 horas</span>
-            </div>
-          </div>
-
-          <div class="notificacao-item">
-            <div class="notificacao-icon warning">⚠️</div>
-            <div class="notificacao-content">
-              <strong>Renovação Próxima</strong>
-              <p>Seu plano vence em 15 dias. Renove para não perder acesso</p>
-              <span class="notificacao-time">Ontem</span>
-            </div>
-          </div>
-        </div>
-      </section>
+    <!-- Mensagem quando não há empresa selecionada -->
+    <div class="dashboard-content" *ngIf="!empresaSelecionada && empresas.length === 0">
+      <div class="empty-state">
+        <div class="empty-icon">🏢</div>
+        <h2>Nenhuma empresa cadastrada</h2>
+        <p>Cadastre sua primeira empresa para começar a usar o Cash in Box</p>
+        <button class="btn-primary" routerLink="/cadastro">
+          ➕ Cadastrar Primeira Empresa
+        </button>
+      </div>
     </div>
   </main>
 </div>
