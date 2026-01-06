@@ -1,16 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
-interface Usuario {
-  id_usuario: number;
+interface Plano {
+  id_plano: number;
   nome: string;
-  email: string;
-  telefone: string;
-  role: string;
-  ultimo_acesso: string;
+  valor: string;
+  duracao_dias: number;
+  fidelidade: boolean;
+  fidelidade_dias: number | null;
   created_at: string;
   updated_at: string;
+}
+
+interface Assinatura {
+  id_assinatura: number;
+  status: string;
+  expira_em: string;
+  fidelidade_fim: string | null;
+  created_at: string;
+  updated_at: string;
+  id_plano: number;
+  id_empresa: number;
+  plano: Plano;
 }
 
 interface Empresa {
@@ -28,23 +40,40 @@ interface Empresa {
   created_at: string;
   updated_at: string;
   id_usuario: number;
+  assinatura: Assinatura;
+}
+
+interface Usuario {
+  id_usuario: number;
+  nome: string;
+  email: string;
+  telefone: string;
+  role: string;
+  ultimo_acesso: string;
+  created_at: string;
+  updated_at: string;
 }
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
   standalone: true
 })
 export class Dashboard implements OnInit {
-  usuario = {
+  usuario: Usuario = {
+    id_usuario: 0,
     nome: '',
     email: '',
-    avatar: '👨‍💼',
-    role: ''
+    telefone: '',
+    role: '',
+    ultimo_acesso: '',
+    created_at: '',
+    updated_at: ''
   };
 
+  usuarioAvatar = '👨‍💼';
   empresaSelecionada: Empresa | null = null;
   empresas: Empresa[] = [];
 
@@ -75,11 +104,8 @@ export class Dashboard implements OnInit {
     const userData = localStorage.getItem('userData');
     if (userData) {
       try {
-        const user: Usuario = JSON.parse(userData);
-        this.usuario.nome = user.nome;
-        this.usuario.email = user.email;
-        this.usuario.role = user.role;
-        this.usuario.avatar = this.getAvatarFromName(user.nome);
+        this.usuario = JSON.parse(userData);
+        this.usuarioAvatar = this.getAvatarFromName(this.usuario.nome);
       } catch (error) {
         console.error('Erro ao carregar dados do usuário:', error);
         this.router.navigate(['/login']);
@@ -106,7 +132,6 @@ export class Dashboard implements OnInit {
   }
 
   private getAvatarFromName(nome: string): string {
-    // Retorna emoji baseado na primeira letra do nome
     const firstLetter = nome.charAt(0).toUpperCase();
     const avatars: { [key: string]: string } = {
       'A': '👨‍💼', 'B': '👩‍💼', 'C': '👨‍💻', 'D': '👩‍💻', 'E': '👨‍🔧',
@@ -124,14 +149,11 @@ export class Dashboard implements OnInit {
   }
 
   formatCpfCnpj(cpfCnpj: string): string {
-    // Remove caracteres não numéricos
     const numbers = cpfCnpj.replace(/\D/g, '');
     
     if (numbers.length === 11) {
-      // CPF: 000.000.000-00
       return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
     } else if (numbers.length === 14) {
-      // CNPJ: 00.000.000/0000-00
       return numbers.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
     }
     
@@ -139,14 +161,11 @@ export class Dashboard implements OnInit {
   }
 
   formatTelefone(telefone: string): string {
-    // Remove caracteres não numéricos
     const numbers = telefone.replace(/\D/g, '');
     
     if (numbers.length === 11) {
-      // Celular: (00) 00000-0000
       return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
     } else if (numbers.length === 10) {
-      // Fixo: (00) 0000-0000
       return numbers.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
     }
     
@@ -182,20 +201,26 @@ export class Dashboard implements OnInit {
   }
 
   getPlanoAtual(): string {
-    // Simular plano (você pode adicionar essa informação na API)
-    return 'Semestral';
+    if (!this.empresaSelecionada?.assinatura?.plano) {
+      return 'Sem plano';
+    }
+    return this.empresaSelecionada.assinatura.plano.nome;
   }
 
   getValorPlano(): number {
-    // Simular valor (você pode adicionar essa informação na API)
-    return 329.90;
+    if (!this.empresaSelecionada?.assinatura?.plano) {
+      return 0;
+    }
+    return parseFloat(this.empresaSelecionada.assinatura.plano.valor);
   }
 
   getDataVencimento(): Date {
-    // Simular vencimento em 30 dias
-    const vencimento = new Date();
-    vencimento.setDate(vencimento.getDate() + 30);
-    return vencimento;
+    if (!this.empresaSelecionada?.assinatura?.expira_em) {
+      const hoje = new Date();
+      hoje.setDate(hoje.getDate() + 30);
+      return hoje;
+    }
+    return new Date(this.empresaSelecionada.assinatura.expira_em);
   }
 
   getDiasRestantes(): number {
@@ -206,10 +231,22 @@ export class Dashboard implements OnInit {
   }
 
   getStatusEmpresa(): 'ativo' | 'pendente' | 'vencido' {
-    const diasRestantes = this.getDiasRestantes();
-    if (diasRestantes > 7) return 'ativo';
-    if (diasRestantes > 0) return 'pendente';
-    return 'vencido';
+    if (!this.empresaSelecionada?.assinatura) {
+      return 'vencido';
+    }
+
+    const status = this.empresaSelecionada.assinatura.status.toLowerCase();
+    
+    if (status === 'ativa') {
+      const diasRestantes = this.getDiasRestantes();
+      if (diasRestantes > 7) return 'ativo';
+      if (diasRestantes > 0) return 'pendente';
+      return 'vencido';
+    } else if (status === 'pendente') {
+      return 'pendente';
+    } else {
+      return 'vencido';
+    }
   }
 
   getStatusClass(status?: string): string {
@@ -235,7 +272,6 @@ export class Dashboard implements OnInit {
   getModulosAtivos(): string[] {
     if (!this.empresaSelecionada) return [];
     
-    // Retornar módulos baseados no segmento
     const segmento = this.empresaSelecionada.segmento.toLowerCase();
     
     const modulosPorSegmento: { [key: string]: string[] } = {

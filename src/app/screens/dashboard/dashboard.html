@@ -13,7 +13,7 @@
       </div>
       <div class="header-right">
         <div class="user-info">
-          <span class="user-avatar">{{ usuario.avatar }}</span>
+          <span class="user-avatar">{{ usuarioAvatar }}</span>
           <div class="user-details">
             <strong>{{ usuario.nome }}</strong>
             <span>{{ usuario.email }}</span>
@@ -112,7 +112,7 @@
         </div>
       </section>
 
-      <!-- Plano Card -->
+      <!-- Plano e Assinatura -->
       <section class="plano-section">
         <h3 class="section-title">📋 Informações do Plano</h3>
         
@@ -123,10 +123,8 @@
               <h4>Plano {{ getPlanoAtual() }}</h4>
               <p class="plano-valor">R$ {{ getValorPlano().toFixed(2) }}</p>
             </div>
-            <div class="plano-status">
-              <div class="status-badge" [ngClass]="getStatusClass()">
-                {{ getStatusLabel() }}
-              </div>
+            <div class="plano-status" [ngClass]="getStatusClass()">
+              {{ getStatusLabel() }}
             </div>
           </div>
 
@@ -144,7 +142,7 @@
             <div class="vencimento-progress">
               <div 
                 class="progress-bar" 
-                [style.width.%]="(getDiasRestantes() / 30) * 100"
+                [style.width.%]="(getDiasRestantes() / empresaSelecionada.assinatura.plano.duracao_dias) * 100"
               ></div>
             </div>
           </div>
@@ -157,7 +155,6 @@
           </div>
         </div>
       </section>
-
     </div>
 
     <!-- Mensagem quando não há empresa selecionada -->

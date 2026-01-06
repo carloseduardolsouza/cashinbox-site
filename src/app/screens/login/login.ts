@@ -3,35 +3,63 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 
+interface Plano {
+  id_plano: number;
+  nome: string;
+  valor: string;
+  duracao_dias: number;
+  fidelidade: boolean;
+  fidelidade_dias: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Assinatura {
+  id_assinatura: number;
+  status: string;
+  expira_em: string;
+  fidelidade_fim: string | null;
+  created_at: string;
+  updated_at: string;
+  id_plano: number;
+  id_empresa: number;
+  plano: Plano;
+}
+
+interface Empresa {
+  id_empresa: number;
+  user_login: string;
+  nome_fantasia: string;
+  razao_social: string;
+  email: string | null;
+  senha: string;
+  telefone: string;
+  cpf_cnpj: string;
+  inscricao_estadual: string;
+  segmento: string;
+  ultimo_acesso: string;
+  created_at: string;
+  updated_at: string;
+  id_usuario: number;
+  assinatura: Assinatura;
+}
+
+interface Usuario {
+  id_usuario: number;
+  nome: string;
+  email: string;
+  telefone: string;
+  role: string;
+  ultimo_acesso: string;
+  created_at: string;
+  updated_at: string;
+}
+
 interface LoginResponse {
   message: string;
   token: string;
-  usuario: {
-    id_usuario: number;
-    nome: string;
-    email: string;
-    telefone: string;
-    role: string;
-    ultimo_acesso: string;
-    created_at: string;
-    updated_at: string;
-  };
-  dadosEmpresas: Array<{
-    id_empresa: number;
-    user_login: string;
-    nome_fantasia: string;
-    razao_social: string;
-    email: string | null;
-    senha: string;
-    telefone: string;
-    cpf_cnpj: string;
-    inscricao_estadual: string;
-    segmento: string;
-    ultimo_acesso: string;
-    created_at: string;
-    updated_at: string;
-    id_usuario: number;
-  }>;
+  usuario: Usuario;
+  dadosEmpresas: Empresa[];
 }
 
 @Component({
@@ -81,7 +109,6 @@ export class Login {
 
       if (!response.ok) {
         if (response.status === 401) {
-          // Tratar erro 401 com mensagem do backend
           const errorData = data as { error: string };
           throw new Error(errorData.error || 'E-mail ou senha incorretos!');
         } else if (response.status === 404) {
