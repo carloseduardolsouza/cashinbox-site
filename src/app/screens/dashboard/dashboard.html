@@ -3,9 +3,9 @@
   <header class="dashboard-header">
     <div class="header-content">
       <div class="header-left">
-        <img 
-          src="../../../assets/Logo-CashInBox-icon-tipografia.png" 
-          alt="Cash in Box" 
+        <img
+          src="../../../assets/Logo-CashInBox-icon-tipografia.png"
+          alt="Cash in Box"
           class="dashboard-logo"
           (click)="voltarParaHome()"
         />
@@ -19,9 +19,7 @@
             <span>{{ usuario.email }}</span>
           </div>
         </div>
-        <button class="btn-logout" (click)="logout()">
-          Sair
-        </button>
+        <button class="btn-logout" (click)="logout()">Sair</button>
       </div>
     </div>
   </header>
@@ -34,9 +32,9 @@
         <h3>Minhas Empresas</h3>
         <span class="empresa-count">{{ empresas.length }}</span>
       </div>
-      
+
       <div class="empresas-list">
-        <div 
+        <div
           class="empresa-item"
           *ngFor="let empresa of empresas"
           [class.selected]="empresaSelecionada?.id_empresa === empresa.id_empresa"
@@ -47,15 +45,16 @@
             <strong>{{ empresa.nome_fantasia }}</strong>
             <span>{{ formatCpfCnpj(empresa.cpf_cnpj) }}</span>
           </div>
-          <div class="empresa-status" [ngClass]="getStatusClass()">
-            {{ getStatusLabel() }}
+          <div
+            class="empresa-status"
+            [ngClass]="empresa.assinatura ? 'status-ativo' : 'status-vencido'"
+          >
+            {{ empresa.assinatura ? 'Ativo' : 'Sem Plano' }}
           </div>
         </div>
       </div>
 
-      <button class="btn-add-empresa" (click)="openAddEmpresaModal()">
-        ➕ Adicionar Empresa
-      </button>
+      <button class="btn-add-empresa" (click)="openAddEmpresaModal()">➕ Adicionar Empresa</button>
     </aside>
 
     <!-- Content Area -->
@@ -78,7 +77,7 @@
       <!-- Informações da Empresa -->
       <section class="info-section">
         <h3 class="section-title">📋 Informações da Empresa</h3>
-        
+
         <div class="info-grid">
           <div class="info-card">
             <div class="info-label">Segmento</div>
@@ -113,15 +112,17 @@
       </section>
 
       <!-- Plano e Assinatura -->
-      <section class="plano-section">
+      <section class="plano-section" *ngIf="empresaSelecionada.assinatura">
         <h3 class="section-title">📋 Informações do Plano</h3>
-        
+
         <div class="plano-card">
           <div class="plano-header">
             <div class="plano-info">
-              <span class="plano-badge">{{ getPlanoAtual() }}</span>
-              <h4>Plano {{ getPlanoAtual() }}</h4>
-              <p class="plano-valor">R$ {{ getValorPlano().toFixed(2) }}</p>
+              <span class="plano-badge">{{ empresaSelecionada.assinatura.plano.nome }}</span>
+              <h4>Plano {{ empresaSelecionada.assinatura.plano.nome }}</h4>
+              <p class="plano-valor">
+                R$ {{ (+empresaSelecionada.assinatura.plano.valor).toFixed(2) }}
+              </p>
             </div>
             <div class="plano-status" [ngClass]="getStatusClass()">
               {{ getStatusLabel() }}
@@ -132,27 +133,39 @@
             <div class="vencimento-info">
               <span class="vencimento-label">Próximo Vencimento</span>
               <span class="vencimento-data">
-                {{ getDataVencimento() | date: 'dd/MM/yyyy' }}
+                {{ getDataVencimento() | date : 'dd/MM/yyyy' }}
               </span>
-              <span class="vencimento-dias">
-                {{ getDiasRestantes() }} dias restantes
-              </span>
+              <span class="vencimento-dias"> {{ getDiasRestantes() }} dias restantes </span>
             </div>
 
             <div class="vencimento-progress">
-              <div 
-                class="progress-bar" 
-                [style.width.%]="(getDiasRestantes() / empresaSelecionada.assinatura.plano.duracao_dias) * 100"
+              <div
+                class="progress-bar"
+                [style.width.%]="
+                  (getDiasRestantes() / empresaSelecionada.assinatura.plano.duracao_dias) * 100
+                "
               ></div>
             </div>
           </div>
 
           <div class="plano-actions">
             <button class="btn-renovar" (click)="renovarPlano()">🔄 Renovar Plano</button>
-            <button class="btn-mudar" (click)="navegarParaPlanos()">
-              📊 Mudar de Plano
-            </button>
+            <button class="btn-mudar" (click)="navegarParaPlanos()">📊 Mudar de Plano</button>
           </div>
+        </div>
+      </section>
+
+      <!-- Sem Plano -->
+      <section class="plano-section" *ngIf="!empresaSelecionada.assinatura">
+        <h3 class="section-title">📋 Contrate um Plano</h3>
+
+        <div class="empty-state">
+          <div class="empty-icon">📦</div>
+          <h2>Nenhum plano ativo</h2>
+          <p>
+            Esta empresa não possui um plano ativo. Contrate um plano para começar a usar o sistema.
+          </p>
+          <button class="btn-primary" (click)="navegarParaPlanos()">Ver Planos Disponíveis</button>
         </div>
       </section>
     </div>
@@ -171,269 +184,10 @@
   </main>
 </div>
 
-<!-- Modal de Adicionar Empresa -->
-<div class="modal-overlay" *ngIf="showAddEmpresaModal" (click)="closeAddEmpresaModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>➕ Adicionar Nova Empresa</h2>
-      <button class="modal-close" (click)="closeAddEmpresaModal()">✕</button>
-    </div>
-
-    <form (ngSubmit)="submitNovaEmpresa()" class="modal-form">
-      <div class="form-section">
-        <h3>🔐 Dados de Acesso</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="user_login">Login da Empresa *</label>
-            <input
-              type="text"
-              id="user_login"
-              name="user_login"
-              [(ngModel)]="novaEmpresa.user_login"
-              placeholder="login_empresa"
-              [disabled]="isSubmittingEmpresa"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="senha">Senha *</label>
-            <input
-              type="password"
-              id="senha"
-              name="senha"
-              [(ngModel)]="novaEmpresa.senha"
-              placeholder="Mínimo 6 caracteres"
-              [disabled]="isSubmittingEmpresa"
-              minlength="6"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="confirmarSenha">Confirmar Senha *</label>
-            <input
-              type="password"
-              id="confirmarSenha"
-              name="confirmarSenha"
-              [(ngModel)]="novaEmpresa.confirmarSenha"
-              placeholder="Digite a senha novamente"
-              [disabled]="isSubmittingEmpresa"
-              required
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h3>🏢 Informações da Empresa</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="nome_fantasia">Nome Fantasia *</label>
-            <input
-              type="text"
-              id="nome_fantasia"
-              name="nome_fantasia"
-              [(ngModel)]="novaEmpresa.nome_fantasia"
-              placeholder="Nome da empresa"
-              [disabled]="isSubmittingEmpresa"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="razao_social">Razão Social *</label>
-            <input
-              type="text"
-              id="razao_social"
-              name="razao_social"
-              [(ngModel)]="novaEmpresa.razao_social"
-              placeholder="Razão social"
-              [disabled]="isSubmittingEmpresa"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="cpf_cnpj">CPF/CNPJ *</label>
-            <input
-              type="text"
-              id="cpf_cnpj"
-              name="cpf_cnpj"
-              [(ngModel)]="novaEmpresa.cpf_cnpj"
-              (input)="formatCpfCnpjModal($event)"
-              placeholder="000.000.000-00 ou 00.000.000/0000-00"
-              [disabled]="isSubmittingEmpresa"
-              maxlength="18"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="telefone">Telefone *</label>
-            <input
-              type="tel"
-              id="telefone"
-              name="telefone"
-              [(ngModel)]="novaEmpresa.telefone"
-              (input)="formatTelefoneModal($event)"
-              placeholder="(00) 00000-0000"
-              [disabled]="isSubmittingEmpresa"
-              maxlength="15"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="inscricao_estadual">Inscrição Estadual (Opcional)</label>
-            <input
-              type="text"
-              id="inscricao_estadual"
-              name="inscricao_estadual"
-              [(ngModel)]="novaEmpresa.inscricao_estadual"
-              placeholder="Inscrição estadual"
-              [disabled]="isSubmittingEmpresa"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="segmento">Segmento *</label>
-            <select
-              id="segmento"
-              name="segmento"
-              [(ngModel)]="novaEmpresa.segmento"
-              [disabled]="isSubmittingEmpresa"
-              required
-            >
-              <option value="">Selecione um segmento</option>
-              <option *ngFor="let seg of segmentos" [value]="seg">{{ seg }}</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h3>📍 Endereço</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="pais">País *</label>
-            <input
-              type="text"
-              id="pais"
-              name="pais"
-              [(ngModel)]="novaEmpresa.pais"
-              placeholder="BR"
-              [disabled]="true"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="estado">Estado *</label>
-            <select
-              id="estado"
-              name="estado"
-              [(ngModel)]="novaEmpresa.estado"
-              [disabled]="isSubmittingEmpresa"
-              required
-            >
-              <option value="">Selecione um estado</option>
-              <option *ngFor="let estado of estados" [value]="estado.sigla">
-                {{ estado.nome }}
-              </option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="cidade">Cidade *</label>
-            <input
-              type="text"
-              id="cidade"
-              name="cidade"
-              [(ngModel)]="novaEmpresa.cidade"
-              placeholder="Nome da cidade"
-              [disabled]="isSubmittingEmpresa"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="bairro">Bairro *</label>
-            <input
-              type="text"
-              id="bairro"
-              name="bairro"
-              [(ngModel)]="novaEmpresa.bairro"
-              placeholder="Nome do bairro"
-              [disabled]="isSubmittingEmpresa"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="rua">Rua *</label>
-            <input
-              type="text"
-              id="rua"
-              name="rua"
-              [(ngModel)]="novaEmpresa.rua"
-              placeholder="Nome da rua"
-              [disabled]="isSubmittingEmpresa"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="complemento">Complemento (Opcional)</label>
-            <input
-              type="text"
-              id="complemento"
-              name="complemento"
-              [(ngModel)]="novaEmpresa.complemento"
-              placeholder="Apartamento, sala, etc"
-              [disabled]="isSubmittingEmpresa"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="cep">CEP *</label>
-            <input
-              type="text"
-              id="cep"
-              name="cep"
-              [(ngModel)]="novaEmpresa.cep"
-              (input)="formatCepModal($event)"
-              placeholder="00000-000"
-              [disabled]="isSubmittingEmpresa"
-              maxlength="9"
-              required
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn-cancel" (click)="closeAddEmpresaModal()" [disabled]="isSubmittingEmpresa">
-          Cancelar
-        </button>
-        <button type="submit" class="btn-submit" [disabled]="isSubmittingEmpresa">
-          <span *ngIf="!isSubmittingEmpresa">✓ Cadastrar Empresa</span>
-          <span *ngIf="isSubmittingEmpresa" class="loading-spinner">
-            <span class="spinner"></span>
-            Cadastrando...
-          </span>
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
+<!-- Modal de Adicionar Empresa (agora um componente) -->
+<app-nova-empresa-modal
+  [show]="showAddEmpresaModal"
+  [usuarioId]="usuario.id_usuario"
+  (onCloseModal)="closeAddEmpresaModal()"
+  (onEmpresaCadastrada)="onEmpresaCadastrada()"
+></app-nova-empresa-modal>
