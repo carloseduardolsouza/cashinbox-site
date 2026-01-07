@@ -53,7 +53,7 @@
         </div>
       </div>
 
-      <button class="btn-add-empresa" routerLink="/cadastro">
+      <button class="btn-add-empresa" (click)="openAddEmpresaModal()">
         ➕ Adicionar Empresa
       </button>
     </aside>
@@ -71,7 +71,7 @@
           </div>
         </div>
         <div class="empresa-header-actions">
-          <button class="btn-edit" (click)="editarEmpresa()">⚙️ Editar</button>
+          <button class="btn-edit" (click)="editarEmpresa()">Ver dados da empresa</button>
         </div>
       </div>
 
@@ -163,10 +163,277 @@
         <div class="empty-icon">🏢</div>
         <h2>Nenhuma empresa cadastrada</h2>
         <p>Cadastre sua primeira empresa para começar a usar o Cash in Box</p>
-        <button class="btn-primary" routerLink="/cadastro">
+        <button class="btn-primary" (click)="openAddEmpresaModal()">
           ➕ Cadastrar Primeira Empresa
         </button>
       </div>
     </div>
   </main>
+</div>
+
+<!-- Modal de Adicionar Empresa -->
+<div class="modal-overlay" *ngIf="showAddEmpresaModal" (click)="closeAddEmpresaModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>➕ Adicionar Nova Empresa</h2>
+      <button class="modal-close" (click)="closeAddEmpresaModal()">✕</button>
+    </div>
+
+    <form (ngSubmit)="submitNovaEmpresa()" class="modal-form">
+      <div class="form-section">
+        <h3>🔐 Dados de Acesso</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="user_login">Login da Empresa *</label>
+            <input
+              type="text"
+              id="user_login"
+              name="user_login"
+              [(ngModel)]="novaEmpresa.user_login"
+              placeholder="login_empresa"
+              [disabled]="isSubmittingEmpresa"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="senha">Senha *</label>
+            <input
+              type="password"
+              id="senha"
+              name="senha"
+              [(ngModel)]="novaEmpresa.senha"
+              placeholder="Mínimo 6 caracteres"
+              [disabled]="isSubmittingEmpresa"
+              minlength="6"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="confirmarSenha">Confirmar Senha *</label>
+            <input
+              type="password"
+              id="confirmarSenha"
+              name="confirmarSenha"
+              [(ngModel)]="novaEmpresa.confirmarSenha"
+              placeholder="Digite a senha novamente"
+              [disabled]="isSubmittingEmpresa"
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>🏢 Informações da Empresa</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nome_fantasia">Nome Fantasia *</label>
+            <input
+              type="text"
+              id="nome_fantasia"
+              name="nome_fantasia"
+              [(ngModel)]="novaEmpresa.nome_fantasia"
+              placeholder="Nome da empresa"
+              [disabled]="isSubmittingEmpresa"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="razao_social">Razão Social *</label>
+            <input
+              type="text"
+              id="razao_social"
+              name="razao_social"
+              [(ngModel)]="novaEmpresa.razao_social"
+              placeholder="Razão social"
+              [disabled]="isSubmittingEmpresa"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cpf_cnpj">CPF/CNPJ *</label>
+            <input
+              type="text"
+              id="cpf_cnpj"
+              name="cpf_cnpj"
+              [(ngModel)]="novaEmpresa.cpf_cnpj"
+              (input)="formatCpfCnpjModal($event)"
+              placeholder="000.000.000-00 ou 00.000.000/0000-00"
+              [disabled]="isSubmittingEmpresa"
+              maxlength="18"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="telefone">Telefone *</label>
+            <input
+              type="tel"
+              id="telefone"
+              name="telefone"
+              [(ngModel)]="novaEmpresa.telefone"
+              (input)="formatTelefoneModal($event)"
+              placeholder="(00) 00000-0000"
+              [disabled]="isSubmittingEmpresa"
+              maxlength="15"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inscricao_estadual">Inscrição Estadual (Opcional)</label>
+            <input
+              type="text"
+              id="inscricao_estadual"
+              name="inscricao_estadual"
+              [(ngModel)]="novaEmpresa.inscricao_estadual"
+              placeholder="Inscrição estadual"
+              [disabled]="isSubmittingEmpresa"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="segmento">Segmento *</label>
+            <select
+              id="segmento"
+              name="segmento"
+              [(ngModel)]="novaEmpresa.segmento"
+              [disabled]="isSubmittingEmpresa"
+              required
+            >
+              <option value="">Selecione um segmento</option>
+              <option *ngFor="let seg of segmentos" [value]="seg">{{ seg }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>📍 Endereço</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pais">País *</label>
+            <input
+              type="text"
+              id="pais"
+              name="pais"
+              [(ngModel)]="novaEmpresa.pais"
+              placeholder="BR"
+              [disabled]="true"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="estado">Estado *</label>
+            <select
+              id="estado"
+              name="estado"
+              [(ngModel)]="novaEmpresa.estado"
+              [disabled]="isSubmittingEmpresa"
+              required
+            >
+              <option value="">Selecione um estado</option>
+              <option *ngFor="let estado of estados" [value]="estado.sigla">
+                {{ estado.nome }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="cidade">Cidade *</label>
+            <input
+              type="text"
+              id="cidade"
+              name="cidade"
+              [(ngModel)]="novaEmpresa.cidade"
+              placeholder="Nome da cidade"
+              [disabled]="isSubmittingEmpresa"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bairro">Bairro *</label>
+            <input
+              type="text"
+              id="bairro"
+              name="bairro"
+              [(ngModel)]="novaEmpresa.bairro"
+              placeholder="Nome do bairro"
+              [disabled]="isSubmittingEmpresa"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="rua">Rua *</label>
+            <input
+              type="text"
+              id="rua"
+              name="rua"
+              [(ngModel)]="novaEmpresa.rua"
+              placeholder="Nome da rua"
+              [disabled]="isSubmittingEmpresa"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="complemento">Complemento (Opcional)</label>
+            <input
+              type="text"
+              id="complemento"
+              name="complemento"
+              [(ngModel)]="novaEmpresa.complemento"
+              placeholder="Apartamento, sala, etc"
+              [disabled]="isSubmittingEmpresa"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="cep">CEP *</label>
+            <input
+              type="text"
+              id="cep"
+              name="cep"
+              [(ngModel)]="novaEmpresa.cep"
+              (input)="formatCepModal($event)"
+              placeholder="00000-000"
+              [disabled]="isSubmittingEmpresa"
+              maxlength="9"
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeAddEmpresaModal()" [disabled]="isSubmittingEmpresa">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-submit" [disabled]="isSubmittingEmpresa">
+          <span *ngIf="!isSubmittingEmpresa">✓ Cadastrar Empresa</span>
+          <span *ngIf="isSubmittingEmpresa" class="loading-spinner">
+            <span class="spinner"></span>
+            Cadastrando...
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
