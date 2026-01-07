@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -26,17 +26,28 @@ export class Cadastro {
 
   acceptTerms: boolean = false;
 
-  constructor(private router: Router) {}
+  // Estados de erro e loading
+  errorMessage: string = '';
+  errorType: 'error' | 'warning' | '' = '';
+  isLoading: boolean = false;
+
+  constructor(
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   nextStep() {
+    // Limpa mensagens de erro
+    this.clearError();
+
     // Validações por etapa
     if (this.currentStep === 1) {
       if (!this.name || !this.email || !this.phone) {
-        alert('Por favor, preencha todos os campos obrigatórios!');
+        this.showError('Por favor, preencha todos os campos obrigatórios!', 'warning');
         return;
       }
       if (!this.isValidEmail(this.email)) {
-        alert('Por favor, insira um e-mail válido!');
+        this.showError('Por favor, insira um e-mail válido!', 'warning');
         return;
       }
     }
@@ -47,29 +58,32 @@ export class Cadastro {
   }
 
   previousStep() {
+    this.clearError();
     if (this.currentStep > 1) {
       this.currentStep--;
     }
   }
 
-  async onSubmit() {
+  onSubmit() {
+    this.clearError();
+
     if (!this.password || !this.confirmPassword) {
-      alert('Por favor, preencha todos os campos de senha!');
+      this.showError('Por favor, preencha todos os campos de senha!', 'warning');
       return;
     }
     
     if (this.password !== this.confirmPassword) {
-      alert('As senhas não coincidem!');
+      this.showError('As senhas não coincidem!', 'warning');
       return;
     }
     
     if (this.password.length < 8) {
-      alert('A senha deve ter no mínimo 8 caracteres!');
+      this.showError('A senha deve ter no mínimo 8 caracteres!', 'warning');
       return;
     }
 
     if (!this.acceptTerms) {
-      alert('Você precisa aceitar os termos de uso!');
+      this.showError('Você precisa aceitar os termos de uso!', 'warning');
       return;
     }
 
@@ -80,29 +94,114 @@ export class Cadastro {
       senha: this.password,
     };
 
-    try {
-      // Cria o usuario no servidor
-      const response = await fetch('https://cashinbox.shop/usuarios', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(cadastroData),
+    console.log('Iniciando cadastro...', cadastroData);
+    this.isLoading = true;
+    this.cdr.detectChanges(); // Força detecção de mudança
+
+    fetch('https://cashinbox.shop/usuarios', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cadastroData),
+    })
+      .then(response => {
+        console.log('Resposta recebida - Status:', response.status);
+        
+        const responseStatus = response.status;
+        const responseOk = response.ok;
+
+        return response.json()
+          .then(result => {
+            console.log('JSON parseado:', result);
+            return { result, responseStatus, responseOk };
+          })
+          .catch(jsonError => {
+            console.error('Erro ao parsear JSON:', jsonError);
+            return { 
+              result: { error: 'Erro ao processar resposta do servidor.' }, 
+              responseStatus, 
+              responseOk: false 
+            };
+          });
+      })
+      .then(({ result, responseStatus, responseOk }) => {
+        console.log('Processando resultado - Status:', responseStatus, 'OK:', responseOk);
+        
+        // SEMPRE desativa o loading aqui
+        this.isLoading = false;
+        this.cdr.detectChanges(); // Força detecção de mudança
+
+        // Verifica se foi sucesso (status 200-299)
+        if (responseOk) {
+          console.log('✅ Usuário criado com sucesso:', result);
+          window.alert('Usuário criado com sucesso!');
+          this.router.navigate(['/login']);
+          return;
+        }
+
+        console.log('❌ Erro detectado:', result);
+
+        // Trata erros específicos
+        
+        // Erro de email duplicado
+        if (
+          result.error && 
+          (result.error.includes('Unique constraint failed') || 
+           result.error.includes('usuarios_email_key') ||
+           result.error.toLowerCase().includes('duplicate') ||
+           result.error.toLowerCase().includes('already exists'))
+        ) {
+          this.showError(
+            'Este e-mail já está sendo usado por outro usuário. Por favor, utilize outro e-mail.',
+            'error'
+          );
+          this.currentStep = 1;
+          this.cdr.detectChanges(); // Força detecção de mudança
+          return;
+        }
+
+        // Erro de validação
+        if (responseStatus === 400) {
+          const errorMsg = result.message || result.error || 'Dados inválidos. Verifique as informações e tente novamente.';
+          this.showError(errorMsg, 'warning');
+          this.cdr.detectChanges(); // Força detecção de mudança
+          return;
+        }
+
+        // Erro interno do servidor
+        if (responseStatus === 500) {
+          const errorMsg = result.message || result.error || 'Erro no servidor. Por favor, tente novamente em alguns instantes.';
+          this.showError(errorMsg, 'error');
+          this.cdr.detectChanges(); // Força detecção de mudança
+          return;
+        }
+
+        // Outros erros
+        const errorMsg = result.message || result.error || 'Erro ao realizar cadastro. Por favor, tente novamente.';
+        this.showError(errorMsg, 'error');
+        this.cdr.detectChanges(); // Força detecção de mudança
+      })
+      .catch(error => {
+        console.error('❌ Erro no catch:', error);
+        // SEMPRE desativa o loading aqui também
+        this.isLoading = false;
+        this.showError(
+          'Erro de conexão. Verifique sua internet e tente novamente.',
+          'error'
+        );
+        this.cdr.detectChanges(); // Força detecção de mudança
       });
+  }
 
-      if (!response.ok) {
-        throw new Error('Erro ao criar usuário');
-      }
+  showError(message: string, type: 'error' | 'warning') {
+    this.errorMessage = message;
+    this.errorType = type;
+  }
 
-      const result = await response.json();
-      console.log('Usuário criado:', result);
-
-      alert('Cadastro realizado com sucesso! Faça login para continuar.');
-      this.router.navigate(['/login']);
-    } catch (error) {
-      console.error('Erro:', error);
-      alert('Erro ao realizar cadastro. Tente novamente.');
-    }
+  clearError() {
+    this.errorMessage = '';
+    this.errorType = '';
   }
 
   togglePasswordVisibility() {

@@ -186,6 +186,81 @@
   background: #2563eb;
 }
 
+/* Mensagens de Erro */
+.error-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-message.error-type-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.error-message.error-type-warning {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.error-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.error-text {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.error-close {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.error-type-error .error-close {
+  color: #991b1b;
+}
+
+.error-type-warning .error-close {
+  color: #92400e;
+}
+
+.error-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
 /* Formulário */
 .cadastro-form {
   display: flex;
@@ -248,6 +323,13 @@
   cursor: pointer;
 }
 
+.form-group input:disabled,
+.form-group select:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* Campo de Senha */
 .password-input {
   position: relative;
@@ -275,6 +357,11 @@
   color: #6b7280;
 }
 
+.toggle-password:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .password-hint {
   font-size: 13px;
   color: #6b7280;
@@ -299,6 +386,11 @@
   cursor: pointer;
   margin-top: 2px;
   flex-shrink: 0;
+}
+
+.checkbox-container input[type='checkbox']:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .checkbox-text {
@@ -345,6 +437,40 @@
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
+.btn-next:disabled,
+.btn-submit:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-submit.loading {
+  cursor: wait;
+}
+
+.loading-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .btn-back {
   flex: 1;
   padding: 13px 24px;
@@ -361,6 +487,11 @@
 .btn-back:hover {
   background: #f9fafb;
   border-color: #9ca3af;
+}
+
+.btn-back:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* Link de Login */
@@ -428,5 +559,13 @@
 
   .form-buttons {
     flex-direction: column;
+  }
+
+  .error-message {
+    padding: 12px 14px;
+  }
+
+  .error-text {
+    font-size: 13px;
   }
 }

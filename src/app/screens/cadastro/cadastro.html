@@ -63,6 +63,21 @@
         </div>
       </div>
 
+      <!-- Mensagem de Erro -->
+      <div 
+        class="error-message" 
+        *ngIf="errorMessage"
+        [class.error-type-error]="errorType === 'error'"
+        [class.error-type-warning]="errorType === 'warning'"
+      >
+        <div class="error-icon">
+          <span *ngIf="errorType === 'error'">⚠️</span>
+          <span *ngIf="errorType === 'warning'">ℹ️</span>
+        </div>
+        <div class="error-text">{{ errorMessage }}</div>
+        <button type="button" class="error-close" (click)="clearError()">✕</button>
+      </div>
+
       <!-- Formulário Multi-Step -->
       <form (ngSubmit)="onSubmit()" class="cadastro-form">
         <!-- Step 1: Dados do Usuário -->
@@ -76,6 +91,7 @@
               [(ngModel)]="name"
               placeholder="João Silva"
               required
+              [disabled]="isLoading"
             />
           </div>
 
@@ -88,6 +104,7 @@
               [(ngModel)]="email"
               placeholder="joao@empresa.com"
               required
+              [disabled]="isLoading"
             />
           </div>
 
@@ -102,10 +119,16 @@
               placeholder="(11) 98765-4321"
               maxlength="15"
               required
+              [disabled]="isLoading"
             />
           </div>
 
-          <button type="button" class="btn-next" (click)="nextStep()">
+          <button 
+            type="button" 
+            class="btn-next" 
+            (click)="nextStep()"
+            [disabled]="isLoading"
+          >
             Próximo
           </button>
         </div>
@@ -123,11 +146,13 @@
                 placeholder="Mínimo 8 caracteres"
                 minlength="8"
                 required
+                [disabled]="isLoading"
               />
               <button
                 type="button"
                 class="toggle-password"
                 (click)="togglePasswordVisibility()"
+                [disabled]="isLoading"
               >
                 {{ showPassword ? '👁️' : '👁️‍🗨️' }}
               </button>
@@ -146,11 +171,13 @@
                 placeholder="Digite a senha novamente"
                 minlength="8"
                 required
+                [disabled]="isLoading"
               />
               <button
                 type="button"
                 class="toggle-password"
                 (click)="toggleConfirmPasswordVisibility()"
+                [disabled]="isLoading"
               >
                 {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
               </button>
@@ -164,6 +191,7 @@
                 [(ngModel)]="acceptTerms"
                 name="acceptTerms"
                 required
+                [disabled]="isLoading"
               />
               <span class="checkbox-text">
                 Eu aceito os <a href="#">Termos de Uso</a> e a 
@@ -173,11 +201,25 @@
           </div>
 
           <div class="form-buttons">
-            <button type="button" class="btn-back" (click)="previousStep()">
+            <button 
+              type="button" 
+              class="btn-back" 
+              (click)="previousStep()"
+              [disabled]="isLoading"
+            >
               Voltar
             </button>
-            <button type="submit" class="btn-submit">
-              Criar conta e iniciar teste grátis
+            <button 
+              type="submit" 
+              class="btn-submit"
+              [disabled]="isLoading"
+              [class.loading]="isLoading"
+            >
+              <span *ngIf="!isLoading">Criar conta e iniciar teste grátis</span>
+              <span *ngIf="isLoading" class="loading-text">
+                <span class="spinner"></span>
+                Criando conta...
+              </span>
             </button>
           </div>
         </div>
