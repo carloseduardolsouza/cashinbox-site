@@ -43,12 +43,6 @@ export class Contato {
     }
   ];
 
-  socialMedia = [
-    { icon: '📘', name: 'Facebook', link: '#' },
-    { icon: '📷', name: 'Instagram', link: '#' },
-    { icon: '🔗', name: 'LinkedIn', link: '#' }
-  ];
-
   onSubmit() {
     console.log('Form submitted:', this.contactForm);
     
