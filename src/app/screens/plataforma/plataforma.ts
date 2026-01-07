@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { NavHeader } from '../../components/nav-header/nav-header';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-plataforma',
@@ -8,40 +9,55 @@ import { CommonModule } from '@angular/common';
   templateUrl: './plataforma.html',
   styleUrl: './plataforma.css',
 })
-export class Plataforma {
+export class Plataforma implements OnInit {
+  private isBrowser: boolean;
+
+  constructor(private router: Router, @Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+
+  ngOnInit() {
+    if (this.isBrowser) {
+      window.scrollTo(0, 0);
+    }
+  }
+
   features = [
     {
       icon: '📊',
       title: 'Dashboard Inteligente',
-      description: 'Visualize todas as suas métricas financeiras em tempo real com gráficos interativos e personalizáveis.',
+      description:
+        'Visualize todas as suas métricas financeiras em tempo real com gráficos interativos e personalizáveis.',
       details: [
         'KPIs em tempo real',
         'Gráficos customizáveis',
         'Exportação de dados',
-        'Widgets personalizados'
-      ]
+        'Widgets personalizados',
+      ],
     },
     {
       icon: '💰',
       title: 'Gestão de Fluxo de Caixa',
-      description: 'Controle completo de entradas e saídas com projeções futuras e alertas inteligentes.',
+      description:
+        'Controle completo de entradas e saídas com projeções futuras e alertas inteligentes.',
       details: [
         'Projeções automáticas',
         'Alertas de saldo baixo',
         'Categorização inteligente',
-        'Relatórios detalhados'
-      ]
+        'Relatórios detalhados',
+      ],
     },
     {
       icon: '🤖',
       title: 'Automação de Processos',
-      description: 'Automatize tarefas repetitivas e ganhe tempo para focar no crescimento do seu negócio.',
+      description:
+        'Automatize tarefas repetitivas e ganhe tempo para focar no crescimento do seu negócio.',
       details: [
         'Conciliação automática',
         'Emissão de boletos',
         'Lembretes de pagamento',
-        'Cobrança automatizada'
-      ]
+        'Cobrança automatizada',
+      ],
     },
     {
       icon: '📈',
@@ -51,8 +67,8 @@ export class Plataforma {
         'Previsão de vendas',
         'Análise de tendências',
         'Recomendações inteligentes',
-        'Detecção de anomalias'
-      ]
+        'Detecção de anomalias',
+      ],
     },
     {
       icon: '👥',
@@ -62,8 +78,8 @@ export class Plataforma {
         'Cálculo automático',
         'Múltiplas regras',
         'Relatórios por vendedor',
-        'Histórico completo'
-      ]
+        'Histórico completo',
+      ],
     },
     {
       icon: '📦',
@@ -73,8 +89,8 @@ export class Plataforma {
         'Controle em tempo real',
         'Alertas de estoque baixo',
         'Movimentações detalhadas',
-        'Integração com vendas'
-      ]
+        'Integração com vendas',
+      ],
     },
     {
       icon: '💳',
@@ -84,8 +100,8 @@ export class Plataforma {
         'Parcelamento flexível',
         'Controle de inadimplência',
         'Lembretes automáticos',
-        'Relatórios de recebíveis'
-      ]
+        'Relatórios de recebíveis',
+      ],
     },
     {
       icon: '📝',
@@ -95,28 +111,26 @@ export class Plataforma {
         'Calendário de pagamentos',
         'Alertas de vencimento',
         'Histórico completo',
-        'Categorização de despesas'
-      ]
+        'Categorização de despesas',
+      ],
     },
     {
       icon: '💾',
       title: 'Backup Automático',
       description: 'Seus dados sempre seguros com backup automático na nuvem.',
-      details: [
-        'Backup diário',
-        'Recuperação fácil',
-        'Criptografia total',
-        'Armazenamento seguro'
-      ]
-    }
+      details: ['Backup diário', 'Recuperação fácil', 'Criptografia total', 'Armazenamento seguro'],
+    },
   ];
+
+  comecarAgora() {
+    this.router.navigate(['/cadastro']);
+  }
 
   technologies = [
     { name: 'Cloud Computing', icon: '☁️' },
     { name: 'Machine Learning', icon: '🧠' },
     { name: 'API Rest', icon: '🔌' },
-    { name: 'Blockchain', icon: '⛓️' },
     { name: 'Big Data', icon: '📊' },
-    { name: 'AI Analytics', icon: '🤖' }
+    { name: 'AI Analytics', icon: '🤖' },
   ];
 }
