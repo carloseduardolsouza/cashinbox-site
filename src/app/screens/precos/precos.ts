@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { NavHeader } from '../../components/nav-header/nav-header';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-precos',
@@ -8,7 +9,19 @@ import { CommonModule } from '@angular/common';
   templateUrl: './precos.html',
   styleUrl: './precos.css',
 })
-export class Precos {
+export class Precos implements OnInit {
+  private isBrowser: boolean;
+
+  constructor(private router: Router, @Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+
+  ngOnInit() {
+    if (this.isBrowser) {
+      window.scrollTo(0, 0);
+    }
+  }
+
   plans = [
     {
       name: 'Mensal',
@@ -115,5 +128,13 @@ export class Precos {
 
     const monthly = (plan.price / months[plan.period]).toFixed(2);
     return `R$ ${monthly}/mês`;
+  }
+
+  routerCadastro() {
+    this.router.navigate(['/cadastro']);
+  }
+
+  routerWhatsapp() {
+    window.open('https://api.whatsapp.com/send/?phone=6294625955&text&type=phone_number&app_absent=0', '_blank');
   }
 }

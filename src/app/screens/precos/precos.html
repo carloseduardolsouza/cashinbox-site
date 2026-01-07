@@ -57,14 +57,6 @@
             </li>
           </ul>
         </div>
-
-        <button 
-          class="btn-select-plan" 
-          [style.background]="plan.color"
-          (click)="selectPlan(plan.name)"
-        >
-          Começar Teste Grátis
-        </button>
       </div>
     </div>
   </section>
@@ -145,8 +137,8 @@
         14 dias para testar todas as funcionalidades, sem cartão de crédito
       </p>
       <div class="cta-buttons">
-        <button class="btn-primary" routerLink="/cadastro">Iniciar Teste Grátis</button>
-        <button class="btn-secondary" routerLink="/contato">Falar com Vendas</button>
+        <button class="btn-primary" (click)="routerCadastro()">Iniciar Teste Grátis</button>
+        <button class="btn-secondary" (click)="routerWhatsapp()">Falar com Vendas</button>
       </div>
     </div>
   </section>
