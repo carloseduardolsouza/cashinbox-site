@@ -75,7 +75,8 @@
   width: 80%;
 }
 
-.section-right > div:last-of-type {
+/* Botões de autenticação */
+.auth-buttons {
   display: flex;
   gap: 12px;
 }
@@ -114,6 +115,63 @@
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
 }
 
+/* Seção de usuário logado */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: #f9fafb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-info:hover {
+  background: #f3f4f6;
+}
+
+.user-avatar {
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-logout {
+  padding: 8px 20px;
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
 /* Menu Mobile */
 .mobile-menu-toggle {
   display: none;
@@ -146,7 +204,7 @@
 }
 
 .mobile-menu.open {
-  max-height: 500px;
+  max-height: 600px;
   padding: 20px 0;
 }
 
@@ -215,6 +273,53 @@
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
 }
 
+/* Menu mobile para usuário logado */
+.mobile-menu-user {
+  padding: 20px 32px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 12px;
+}
+
+.mobile-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 12px;
+}
+
+.mobile-user-avatar {
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-user-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.btn-logout-mobile {
+  width: 100%;
+  padding: 12px 24px;
+  background: transparent;
+  color: #dc2626;
+  border: 2px solid #fecaca;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-logout-mobile:hover {
+  background: #fee2e2;
+  border-color: #dc2626;
+}
+
 /* Responsivo */
 @media (max-width: 1024px) {
   .section-dropdown {
@@ -233,7 +338,11 @@
     gap: 16px;
   }
 
-  .section-right > div:last-of-type {
+  .auth-buttons {
+    display: none;
+  }
+
+  .user-section {
     display: none;
   }
 }
@@ -269,5 +378,9 @@
 
   .mobile-menu-toggle {
     font-size: 24px;
+  }
+
+  .mobile-menu-user {
+    padding: 16px 24px;
   }
 }

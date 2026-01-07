@@ -11,6 +11,9 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 export class NavHeader implements OnInit {
   mobileMenuOpen = false;
   isScrolled = false;
+  isLoggedIn = false;
+  userName = '';
+  userAvatar = '👨‍💼';
   private isBrowser: boolean;
 
   constructor(
@@ -24,6 +27,7 @@ export class NavHeader implements OnInit {
     // Verificar scroll inicial apenas no browser
     if (this.isBrowser) {
       this.checkScroll();
+      this.checkLoginStatus();
     }
   }
 
@@ -48,6 +52,36 @@ export class NavHeader implements OnInit {
     }
   }
 
+  private checkLoginStatus() {
+    if (this.isBrowser) {
+      this.isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+      if (this.isLoggedIn) {
+        const userData = localStorage.getItem('userData');
+        if (userData) {
+          try {
+            const user = JSON.parse(userData);
+            this.userName = user.nome || 'Usuário';
+            this.userAvatar = this.getAvatarFromName(this.userName);
+          } catch (error) {
+            console.error('Erro ao carregar dados do usuário:', error);
+          }
+        }
+      }
+    }
+  }
+
+  private getAvatarFromName(nome: string): string {
+    const firstLetter = nome.charAt(0).toUpperCase();
+    const avatars: { [key: string]: string } = {
+      'A': '👨‍💼', 'B': '👩‍💼', 'C': '👨‍💻', 'D': '👩‍💻', 'E': '👨‍🔧',
+      'F': '👩‍🔧', 'G': '👨‍🎨', 'H': '👩‍🎨', 'I': '👨‍🍳', 'J': '👩‍🍳',
+      'K': '👨‍⚕️', 'L': '👩‍⚕️', 'M': '👨‍🏫', 'N': '👩‍🏫', 'O': '👨‍🚀',
+      'P': '👩‍🚀', 'Q': '👨‍🎓', 'R': '👩‍🎓', 'S': '👨‍💼', 'T': '👩‍💼',
+      'U': '👨‍🔬', 'V': '👩‍🔬', 'W': '👨‍🎤', 'X': '👩‍🎤', 'Y': '👨‍✈️', 'Z': '👩‍✈️'
+    };
+    return avatars[firstLetter] || '👤';
+  }
+
   navigateToLogin() {
     this.router.navigate(['/login']);
   }
@@ -57,6 +91,26 @@ export class NavHeader implements OnInit {
   }
 
   navigateToHome() {
+    this.router.navigate(['/']);
+  }
+
+  navigateToDashboard() {
+    this.router.navigate(['/dashboard']);
+  }
+
+  logout() {
+    if (!this.isBrowser) return;
+
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userLoggedIn');
+    localStorage.removeItem('userData');
+    localStorage.removeItem('empresasData');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userName');
+    
+    this.isLoggedIn = false;
+    this.userName = '';
+    
     this.router.navigate(['/']);
   }
 

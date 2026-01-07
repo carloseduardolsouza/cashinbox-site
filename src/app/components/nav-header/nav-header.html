@@ -7,7 +7,18 @@
   />
 
   <div class="section-right">
+    <!-- Menu de navegação (sempre visível) -->
     <div class="section-dropdown">
+      <!-- Link do Dashboard só aparece quando logado -->
+      <p 
+        *ngIf="isLoggedIn"
+        routerLink="/dashboard" 
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: false}"
+      >
+        Meu Painel
+      </p>
+
       <p 
         routerLink="/plataforma" 
         routerLinkActive="active"
@@ -15,16 +26,6 @@
       >
         Plataforma
       </p>
-      
-      <!--
-      <p 
-        routerLink="/modulos" 
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: false}"
-      >
-        Módulos
-      </p>
-      -->
 
       <p 
         routerLink="/download" 
@@ -49,9 +50,19 @@
       </p>
     </div>
 
-    <div>
+    <!-- Botões para usuários NÃO logados -->
+    <div class="auth-buttons" *ngIf="!isLoggedIn">
       <button id="button-login" (click)="navigateToLogin()">Login</button>
       <button id="button-cadastro" (click)="navigateToCadastro()">Começar Grátis</button>
+    </div>
+
+    <!-- Informações do usuário logado -->
+    <div class="user-section" *ngIf="isLoggedIn">
+      <div class="user-info">
+        <span class="user-avatar">{{ userAvatar }}</span>
+        <span class="user-name">{{ userName }}</span>
+      </div>
+      <button class="btn-logout" (click)="logout()">Sair</button>
     </div>
 
     <button 
@@ -67,7 +78,27 @@
 
 <!-- Menu Mobile -->
 <div class="mobile-menu" [class.open]="mobileMenuOpen">
+  <!-- Informações do usuário no mobile (se logado) -->
+  <div class="mobile-menu-user" *ngIf="isLoggedIn">
+    <div class="mobile-user-info">
+      <span class="mobile-user-avatar">{{ userAvatar }}</span>
+      <span class="mobile-user-name">{{ userName }}</span>
+    </div>
+  </div>
+
+  <!-- Links de navegação (sempre visíveis) -->
   <div class="mobile-menu-links">
+    <!-- Link do Dashboard só aparece quando logado -->
+    <p 
+      *ngIf="isLoggedIn"
+      routerLink="/dashboard" 
+      routerLinkActive="active" 
+      (click)="closeMobileMenu()"
+      [routerLinkActiveOptions]="{exact: false}"
+    >
+      Meu Painel
+    </p>
+
     <p 
       routerLink="/plataforma" 
       routerLinkActive="active" 
@@ -76,17 +107,6 @@
     >
       Plataforma
     </p>
-    
-    <!-- 
-    <p 
-      routerLink="/modulos" 
-      routerLinkActive="active" 
-      (click)="closeMobileMenu()"
-      [routerLinkActiveOptions]="{exact: false}"
-    >
-      Módulos
-    </p>
-    -->
 
     <p 
       routerLink="/download" 
@@ -113,18 +133,32 @@
       Contato
     </p>
   </div>
+
+  <!-- Botões do mobile -->
   <div class="mobile-menu-buttons">
+    <!-- Botões de login/cadastro (apenas se NÃO logado) -->
+    <ng-container *ngIf="!isLoggedIn">
+      <button 
+        id="button-login" 
+        (click)="navigateToLogin(); closeMobileMenu()"
+      >
+        Login
+      </button>
+      <button 
+        id="button-cadastro" 
+        (click)="navigateToCadastro(); closeMobileMenu()"
+      >
+        Começar Grátis
+      </button>
+    </ng-container>
+
+    <!-- Botão de logout (apenas se logado) -->
     <button 
-      id="button-login" 
-      (click)="navigateToLogin(); closeMobileMenu()"
+      *ngIf="isLoggedIn"
+      class="btn-logout-mobile" 
+      (click)="logout(); closeMobileMenu()"
     >
-      Login
-    </button>
-    <button 
-      id="button-cadastro" 
-      (click)="navigateToCadastro(); closeMobileMenu()"
-    >
-      Começar Grátis
+      Sair
     </button>
   </div>
 </div>
