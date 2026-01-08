@@ -1,0 +1,140 @@
+<div class="modal-overlay" *ngIf="show" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Modal Principal - Lista de Planos -->
+    <div *ngIf="!showConfirmacao">
+      <div class="modal-header">
+        <h2>💳 Escolha seu Plano</h2>
+        <button class="modal-close" (click)="close()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Loading -->
+        <div class="loading-container" *ngIf="isLoadingPlanos">
+          <div class="spinner-large"></div>
+          <p>Carregando planos disponíveis...</p>
+        </div>
+
+        <!-- Grid de Planos -->
+        <div class="planos-grid" *ngIf="!isLoadingPlanos">
+          <div
+            class="plano-card"
+            *ngFor="let plano of planos"
+            (click)="selecionarPlano(plano)"
+            [class.popular]="isPlanoPopular(plano.nome)"
+          >
+            <div class="popular-badge" *ngIf="isPlanoPopular(plano.nome)">
+              ⭐ Mais Escolhido
+            </div>
+
+            <div class="plano-icon" [style.background]="getCorPlano(plano.nome)">
+              {{ getIconePlano(plano.nome) }}
+            </div>
+
+            <h3>{{ plano.nome }}</h3>
+
+            <div class="plano-preco">
+              <span class="preco-valor">R$ {{ getValorFormatado(plano.valor) }}</span>
+              <span class="preco-periodo">/ {{ getDuracaoTexto(plano.duracao_dias) }}</span>
+            </div>
+
+            <div class="plano-mensal" *ngIf="plano.duracao_dias > 30">
+              <span>R$ {{ getValorMensal(plano) }}/mês</span>
+            </div>
+
+            <div class="plano-detalhes">
+              <div class="detalhe-item">
+                <span class="check-icon">✓</span>
+                <span>{{ plano.duracao_dias }} dias de acesso</span>
+              </div>
+              <div class="detalhe-item" *ngIf="plano.fidelidade">
+                <span class="check-icon">✓</span>
+                <span>Fidelidade de {{ plano.fidelidade_dias }} dias</span>
+              </div>
+              <div class="detalhe-item" *ngIf="!plano.fidelidade">
+                <span class="check-icon">✓</span>
+                <span>Sem fidelidade</span>
+              </div>
+            </div>
+
+            <button class="btn-selecionar" [style.background]="getCorPlano(plano.nome)">
+              Selecionar Plano
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div *ngIf="showConfirmacao && planoSelecionado">
+      <div class="modal-header">
+        <h2>✅ Confirmar Contratação</h2>
+        <button class="modal-close" (click)="cancelarConfirmacao()" [disabled]="isLoading">
+          ✕
+        </button>
+      </div>
+
+      <div class="modal-body confirmacao-body">
+        <div class="confirmacao-card">
+          <div class="confirmacao-icon" [style.background]="getCorPlano(planoSelecionado.nome)">
+            {{ getIconePlano(planoSelecionado.nome) }}
+          </div>
+
+          <h3>{{ planoSelecionado.nome }}</h3>
+
+          <div class="confirmacao-preco">
+            <span class="preco-total">R$ {{ getValorFormatado(planoSelecionado.valor) }}</span>
+            <span class="preco-parcelado" *ngIf="planoSelecionado.duracao_dias > 30">
+              ou R$ {{ getValorMensal(planoSelecionado) }}/mês
+            </span>
+          </div>
+
+          <div class="confirmacao-detalhes">
+            <div class="detalhe-row">
+              <span class="detalhe-label">Duração:</span>
+              <span class="detalhe-valor">{{ planoSelecionado.duracao_dias }} dias</span>
+            </div>
+            <div class="detalhe-row">
+              <span class="detalhe-label">Fidelidade:</span>
+              <span class="detalhe-valor">
+                {{ planoSelecionado.fidelidade ? planoSelecionado.fidelidade_dias + ' dias' : 'Sem fidelidade' }}
+              </span>
+            </div>
+            <div class="detalhe-row">
+              <span class="detalhe-label">Forma de Pagamento:</span>
+              <span class="detalhe-valor">Boleto Bancário</span>
+            </div>
+          </div>
+
+          <div class="confirmacao-info">
+            <span class="info-icon">ℹ️</span>
+            <p>
+              Ao confirmar, você receberá o boleto para pagamento. Após a confirmação do pagamento,
+              seu plano será ativado automaticamente.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          class="btn-cancelar"
+          (click)="cancelarConfirmacao()"
+          [disabled]="isLoading"
+        >
+          Cancelar
+        </button>
+        <button
+          class="btn-confirmar"
+          (click)="confirmarContratacao()"
+          [disabled]="isLoading"
+        >
+          <span *ngIf="!isLoading">Confirmar e Gerar Boleto</span>
+          <span *ngIf="isLoading" class="loading-text">
+            <span class="spinner"></span>
+            Gerando boleto...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

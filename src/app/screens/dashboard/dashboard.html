@@ -184,10 +184,19 @@
   </main>
 </div>
 
-<!-- Modal de Adicionar Empresa (agora um componente) -->
+<!-- Modal de Adicionar Empresa -->
 <app-nova-empresa-modal
   [show]="showAddEmpresaModal"
   [usuarioId]="usuario.id_usuario"
   (onCloseModal)="closeAddEmpresaModal()"
   (onEmpresaCadastrada)="onEmpresaCadastrada()"
 ></app-nova-empresa-modal>
+
+<!-- Modal de Planos -->
+<app-plano-modal
+  *ngIf="empresaSelecionada"
+  [show]="showPlanoModal"
+  [empresaId]="empresaSelecionada.id_empresa"
+  (onCloseModal)="closePlanoModal()"
+  (onPlanoContratado)="onPlanoContratado()"
+></app-plano-modal>

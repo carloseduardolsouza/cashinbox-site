@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NovaEmpresaModal } from '../../components/nova-empresa-modal/nova-empresa-modal';
+import { PlanoModal } from '../../components/plano-modal/plano-modal';
 
 interface Plano {
   id_plano: number;
@@ -58,7 +59,7 @@ interface Usuario {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, RouterModule, FormsModule, NovaEmpresaModal],
+  imports: [CommonModule, RouterModule, FormsModule, NovaEmpresaModal, PlanoModal],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
   standalone: true
@@ -81,6 +82,9 @@ export class Dashboard implements OnInit {
   
   // Modal de adicionar empresa
   showAddEmpresaModal = false;
+  
+  // Modal de planos
+  showPlanoModal = false;
 
   constructor(private router: Router) {}
 
@@ -138,7 +142,7 @@ export class Dashboard implements OnInit {
     return avatars[firstLetter] || '👤';
   }
 
-  // Funções da modal
+  // Funções da modal de empresa
   openAddEmpresaModal() {
     this.showAddEmpresaModal = true;
   }
@@ -165,7 +169,6 @@ export class Dashboard implements OnInit {
       if (response.ok) {
         const data = await response.json();
         
-        // Extrair dadosEmpresas do objeto usuario
         if (data.usuario && data.usuario.dadosEmpresas) {
           this.empresas = data.usuario.dadosEmpresas;
           localStorage.setItem('empresasData', JSON.stringify(this.empresas));
@@ -177,6 +180,33 @@ export class Dashboard implements OnInit {
       }
     } catch (error) {
       console.error('Erro ao recarregar empresas:', error);
+    }
+  }
+
+  // Funções da modal de planos
+  navegarParaPlanos() {
+    if (!this.empresaSelecionada) {
+      alert('Selecione uma empresa primeiro!');
+      return;
+    }
+    this.showPlanoModal = true;
+  }
+
+  closePlanoModal() {
+    this.showPlanoModal = false;
+  }
+
+  async onPlanoContratado() {
+    this.closePlanoModal();
+    await this.reloadEmpresas();
+    
+    if (this.empresaSelecionada) {
+      const empresaAtualizada = this.empresas.find(
+        e => e.id_empresa === this.empresaSelecionada!.id_empresa
+      );
+      if (empresaAtualizada) {
+        this.empresaSelecionada = empresaAtualizada;
+      }
     }
   }
 
@@ -306,8 +336,12 @@ export class Dashboard implements OnInit {
     return labels[statusAtual] || 'Ativo';
   }
 
-  navegarParaPlanos() {
-    this.router.navigate(['/precos']);
+  renovarPlano() {
+    if (!this.empresaSelecionada) {
+      alert('Selecione uma empresa primeiro!');
+      return;
+    }
+    this.showPlanoModal = true;
   }
 
   logout() {
@@ -330,11 +364,6 @@ export class Dashboard implements OnInit {
   editarEmpresa() {
     console.log('Editar empresa:', this.empresaSelecionada);
     alert('Funcionalidade de edição em desenvolvimento!');
-  }
-
-  renovarPlano() {
-    console.log('Renovar plano da empresa:', this.empresaSelecionada);
-    this.navegarParaPlanos();
   }
 
   configurarModulo(modulo: string) {
