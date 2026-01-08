@@ -14,8 +14,16 @@
           <p>Carregando planos disponíveis...</p>
         </div>
 
+        <!-- Mensagem se não houver planos -->
+        <div class="loading-container" *ngIf="!isLoadingPlanos && planos.length === 0">
+          <p>Nenhum plano disponível no momento.</p>
+          <button class="btn-confirmar" (click)="carregarPlanos()">
+            Tentar Novamente
+          </button>
+        </div>
+
         <!-- Grid de Planos -->
-        <div class="planos-grid" *ngIf="!isLoadingPlanos">
+        <div class="planos-grid" *ngIf="!isLoadingPlanos && planos.length > 0">
           <div
             class="plano-card"
             *ngFor="let plano of planos"

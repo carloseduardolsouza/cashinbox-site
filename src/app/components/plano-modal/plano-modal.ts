@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 interface Plano {
@@ -17,9 +25,9 @@ interface Plano {
   imports: [CommonModule],
   standalone: true,
   templateUrl: './plano-modal.html',
-  styleUrls: ['./plano-modal.css']
+  styleUrls: ['./plano-modal.css'],
 })
-export class PlanoModal {
+export class PlanoModal implements OnInit, OnChanges {
   @Input() show = false;
   @Input() empresaId = 0;
   @Output() onCloseModal = new EventEmitter<void>();
@@ -32,43 +40,69 @@ export class PlanoModal {
   showConfirmacao = false;
 
   ngOnInit() {
-    if (this.show) {
-      this.carregarPlanos();
-    }
+    // Não carregar automaticamente no init
+    console.log('PlanoModal initialized', { show: this.show, empresaId: this.empresaId });
+    this.carregarPlanos()
   }
 
-  ngOnChanges() {
-    if (this.show && this.planos.length === 0) {
+  ngOnChanges(changes: SimpleChanges) {
+    // Carregar planos apenas quando o modal for aberto
+    if (changes['show'] && changes['show'].currentValue === true && this.planos.length === 0) {
+      console.log('Modal opened, loading planos...');
       this.carregarPlanos();
     }
   }
 
   async carregarPlanos() {
     this.isLoadingPlanos = true;
+    console.log('Starting to load planos...');
+
     try {
       const response = await fetch('https://cashinbox.shop/planos', {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
-      
+      console.log('Response status:', response.status);
+
       if (!response.ok) {
         throw new Error('Erro ao carregar planos');
       }
-      
+
       const data = await response.json();
-      this.planos = Array.isArray(data.data) ? data.data : [];
+
+      console.log('Data received:', data);
+
+      // Verificar se os dados estão no formato correto
+      if (data && data.data && Array.isArray(data.data)) {
+        this.planos = data.data.slice(0, -2);
+        console.log('Planos loaded successfully:', this.planos);
+      } else if (Array.isArray(data)) {
+        this.planos = data;
+        console.log('Planos loaded successfully (direct array):', this.planos);
+      } else {
+        console.error('Unexpected data format:', data);
+        this.planos = [];
+      }
     } catch (error) {
       console.error('Erro ao carregar planos:', error);
       alert('Erro ao carregar planos disponíveis. Tente novamente.');
+      this.planos = [];
     } finally {
       this.isLoadingPlanos = false;
+      console.log(
+        'Finished loading planos. isLoadingPlanos:',
+        this.isLoadingPlanos,
+        'planos count:',
+        this.planos.length
+      );
     }
   }
 
   selecionarPlano(plano: Plano) {
+    console.log('Plano selecionado:', plano);
     this.planoSelecionado = plano;
     this.showConfirmacao = true;
   }
@@ -88,12 +122,12 @@ export class PlanoModal {
       const response = await fetch('https://cashinbox.shop/assinaturas', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           id_empresa: this.empresaId,
-          id_plano: this.planoSelecionado.id_plano
-        })
+          id_plano: this.planoSelecionado.id_plano,
+        }),
       });
 
       if (!response.ok) {
@@ -109,8 +143,8 @@ export class PlanoModal {
         {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         }
       );
 
@@ -119,7 +153,7 @@ export class PlanoModal {
       }
 
       const boletoData = await boletoResponse.json();
-      
+
       // Abre o PDF do boleto em uma nova aba
       if (boletoData.boleto_url) {
         window.open(boletoData.boleto_url, '_blank');
@@ -163,22 +197,22 @@ export class PlanoModal {
 
   getIconePlano(nome: string): string {
     const icons: { [key: string]: string } = {
-      'Mensal': '📅',
-      'Trimestral': '📊',
-      'Semestral': '💼',
-      'Anual': '🏆',
-      'Beta': '🚀'
+      Mensal: '📅',
+      Trimestral: '📊',
+      Semestral: '💼',
+      Anual: '🏆',
+      Beta: '🚀',
     };
     return icons[nome] || '📦';
   }
 
   getCorPlano(nome: string): string {
     const colors: { [key: string]: string } = {
-      'Mensal': 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-      'Trimestral': 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-      'Semestral': 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
-      'Anual': 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-      'Beta': 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)'
+      Mensal: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      Trimestral: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+      Semestral: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+      Anual: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+      Beta: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
     };
     return colors[nome] || 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
   }
