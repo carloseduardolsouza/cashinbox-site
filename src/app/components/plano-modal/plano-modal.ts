@@ -187,8 +187,8 @@ export class PlanoModal implements OnInit, OnChanges {
         throw new Error('Boleto não foi gerado. Entre em contato com o suporte.');
       }
 
-      // Abrir o PDF do boleto em uma nova aba
-      await window.open(data.boleto, '_blank');
+      // CORREÇÃO 2: Abrir o PDF do boleto em uma nova aba (sem await)
+      window.open(data.boleto, '_blank', 'noopener,noreferrer');
 
       alert('Plano contratado com sucesso! O boleto foi aberto em uma nova aba.');
       

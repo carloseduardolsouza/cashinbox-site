@@ -103,6 +103,9 @@ export class Dashboard implements OnInit {
 
     this.loadUserData();
     this.loadEmpresasData();
+    
+    // CORREÇÃO 1: Sempre recarregar empresas ao inicializar/atualizar a página
+    this.reloadEmpresas();
   }
 
   private loadUserData() {
@@ -185,9 +188,11 @@ export class Dashboard implements OnInit {
           'Authorization': `Bearer ${token}`
         }
       });
+
       
       if (response.ok) {
         const data = await response.json();
+        console.log(data)
         
         if (data.usuario && data.usuario.dadosEmpresas) {
           this.empresas = data.usuario.dadosEmpresas;
@@ -233,6 +238,7 @@ export class Dashboard implements OnInit {
 
   async onPlanoContratado() {
     this.closePlanoModal();
+    // CORREÇÃO 1: Recarregar empresas após contratação de plano
     await this.reloadEmpresas();
   }
 
