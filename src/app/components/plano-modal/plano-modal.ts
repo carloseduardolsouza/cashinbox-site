@@ -6,8 +6,10 @@ import {
   OnInit,
   OnChanges,
   SimpleChanges,
+  PLATFORM_ID,
+  Inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 
 interface Plano {
   id_plano: number;
@@ -18,6 +20,18 @@ interface Plano {
   fidelidade_dias: number | null;
   created_at: string;
   updated_at: string;
+}
+
+interface NovaAssinaturaResponse {
+  id_assinatura: number;
+  status: string;
+  expira_em: string;
+  fidelidade_fim: string | null;
+  created_at: string;
+  updated_at: string;
+  id_plano: number;
+  id_empresa: number;
+  boleto: string;
 }
 
 @Component({
@@ -38,15 +52,18 @@ export class PlanoModal implements OnInit, OnChanges {
   isLoadingPlanos = false;
   planoSelecionado: Plano | null = null;
   showConfirmacao = false;
+  private isBrowser: boolean;
+
+  constructor(@Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit() {
-    // Não carregar automaticamente no init
     console.log('PlanoModal initialized', { show: this.show, empresaId: this.empresaId });
-    this.carregarPlanos()
+    this.carregarPlanos();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // Carregar planos apenas quando o modal for aberto
     if (changes['show'] && changes['show'].currentValue === true && this.planos.length === 0) {
       console.log('Modal opened, loading planos...');
       this.carregarPlanos();
@@ -75,7 +92,6 @@ export class PlanoModal implements OnInit, OnChanges {
 
       console.log('Data received:', data);
 
-      // Verificar se os dados estão no formato correto
       if (data && data.data && Array.isArray(data.data)) {
         this.planos = data.data.slice(0, -2);
         console.log('Planos loaded successfully:', this.planos);
@@ -115,57 +131,82 @@ export class PlanoModal implements OnInit, OnChanges {
   async confirmarContratacao() {
     if (!this.planoSelecionado) return;
 
+    // Verificar se está no browser
+    if (!this.isBrowser) {
+      console.error('Não está executando no browser');
+      return;
+    }
+
+    // Obter o token do localStorage
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      alert('Você precisa estar logado para contratar um plano. Redirecionando para o login...');
+      this.close();
+      window.location.href = '/login';
+      return;
+    }
+
     this.isLoading = true;
 
     try {
-      // Requisição para contratar o plano
-      const response = await fetch('https://cashinbox.shop/assinaturas', {
+      // Requisição POST para contratar o plano
+      const response = await fetch('https://cashinbox.shop/site/novaAssinatura', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          id_empresa: this.empresaId,
           id_plano: this.planoSelecionado.id_plano,
+          id_empresa: this.empresaId,
         }),
       });
 
+      // Verificar se houve erro na resposta
       if (!response.ok) {
-        throw new Error('Erro ao contratar plano');
+        const errorData = await response.json().catch(() => null);
+        
+        if (response.status === 401) {
+          throw new Error('Sessão expirada. Por favor, faça login novamente.');
+        } else if (response.status === 400) {
+          throw new Error(errorData?.error || errorData?.message || 'Dados inválidos para contratação do plano.');
+        } else if (response.status === 404) {
+          throw new Error('Plano ou empresa não encontrado.');
+        } else if (response.status === 500) {
+          throw new Error('Erro no servidor. Tente novamente mais tarde.');
+        } else {
+          throw new Error(errorData?.error || errorData?.message || 'Erro ao contratar plano.');
+        }
       }
 
-      const data = await response.json();
+      const data: NovaAssinaturaResponse = await response.json();
       console.log('Plano contratado:', data);
 
-      // Requisição GET para obter o link do boleto
-      const boletoResponse = await fetch(
-        `https://cashinbox.shop/assinaturas/${data.id_assinatura}/boleto`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (!boletoResponse.ok) {
-        throw new Error('Erro ao obter boleto');
+      // Verificar se o boleto foi retornado
+      if (!data.boleto) {
+        throw new Error('Boleto não foi gerado. Entre em contato com o suporte.');
       }
 
-      const boletoData = await boletoResponse.json();
-
-      // Abre o PDF do boleto em uma nova aba
-      if (boletoData.boleto_url) {
-        window.open(boletoData.boleto_url, '_blank');
-      }
+      // Abrir o PDF do boleto em uma nova aba
+      await window.open(data.boleto, '_blank');
 
       alert('Plano contratado com sucesso! O boleto foi aberto em uma nova aba.');
+      
       this.showConfirmacao = false;
       this.planoSelecionado = null;
       this.onPlanoContratado.emit();
-    } catch (error) {
-      console.error('Erro:', error);
-      alert('Erro ao contratar plano. Tente novamente.');
+      
+    } catch (error: any) {
+      console.error('Erro ao contratar plano:', error);
+      
+      // Tratamento de erros específicos
+      if (error.message.includes('Sessão expirada') || error.message.includes('login')) {
+        alert(error.message);
+        localStorage.clear();
+        window.location.href = '/login';
+      } else {
+        alert(error.message || 'Erro ao contratar plano. Tente novamente.');
+      }
     } finally {
       this.isLoading = false;
     }

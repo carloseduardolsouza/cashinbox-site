@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, Inject, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NovaEmpresaModal } from '../../components/nova-empresa-modal/nova-empresa-modal';
@@ -80,15 +80,21 @@ export class Dashboard implements OnInit {
   empresaSelecionada: Empresa | null = null;
   empresas: Empresa[] = [];
   
-  // Modal de adicionar empresa
   showAddEmpresaModal = false;
-  
-  // Modal de planos
   showPlanoModal = false;
+  private isBrowser: boolean;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit() {
+    if (!this.isBrowser) return;
+
     const isLoggedIn = localStorage.getItem('userLoggedIn');
     if (!isLoggedIn) {
       this.router.navigate(['/login']);
@@ -100,6 +106,8 @@ export class Dashboard implements OnInit {
   }
 
   private loadUserData() {
+    if (!this.isBrowser) return;
+
     const userData = localStorage.getItem('userData');
     if (userData) {
       try {
@@ -115,6 +123,8 @@ export class Dashboard implements OnInit {
   }
 
   private loadEmpresasData() {
+    if (!this.isBrowser) return;
+
     const empresasData = localStorage.getItem('empresasData');
     if (empresasData) {
       try {
@@ -124,6 +134,9 @@ export class Dashboard implements OnInit {
         if (this.empresas.length > 0) {
           this.empresaSelecionada = this.empresas[0];
         }
+        
+        // Forçar detecção de mudanças
+        this.cdr.detectChanges();
       } catch (error) {
         console.error('Erro ao carregar dados das empresas:', error);
       }
@@ -142,7 +155,6 @@ export class Dashboard implements OnInit {
     return avatars[firstLetter] || '👤';
   }
 
-  // Funções da modal de empresa
   openAddEmpresaModal() {
     this.showAddEmpresaModal = true;
   }
@@ -151,18 +163,26 @@ export class Dashboard implements OnInit {
     this.showAddEmpresaModal = false;
   }
 
-  onEmpresaCadastrada() {
+  async onEmpresaCadastrada() {
     this.closeAddEmpresaModal();
-    this.reloadEmpresas();
+    await this.reloadEmpresas();
   }
 
   async reloadEmpresas() {
+    if (!this.isBrowser) return;
+
     try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.error('Token não encontrado');
+        return;
+      }
+
       const response = await fetch('https://cashinbox.shop/login/userUpdate', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       
@@ -173,17 +193,32 @@ export class Dashboard implements OnInit {
           this.empresas = data.usuario.dadosEmpresas;
           localStorage.setItem('empresasData', JSON.stringify(this.empresas));
           
-          if (this.empresas.length > 0 && !this.empresaSelecionada) {
-            this.empresaSelecionada = this.empresas[0];
+          // Se não há empresa selecionada ou se a empresa atual não existe mais, selecionar a primeira
+          if (!this.empresaSelecionada || !this.empresas.find(e => e.id_empresa === this.empresaSelecionada?.id_empresa)) {
+            if (this.empresas.length > 0) {
+              this.empresaSelecionada = this.empresas[0];
+            } else {
+              this.empresaSelecionada = null;
+            }
+          } else {
+            // Atualizar a empresa selecionada com os dados mais recentes
+            const empresaAtualizada = this.empresas.find(e => e.id_empresa === this.empresaSelecionada?.id_empresa);
+            if (empresaAtualizada) {
+              this.empresaSelecionada = empresaAtualizada;
+            }
           }
+          
+          // Forçar detecção de mudanças
+          this.cdr.detectChanges();
         }
+      } else {
+        console.error('Erro ao recarregar empresas:', response.status);
       }
     } catch (error) {
       console.error('Erro ao recarregar empresas:', error);
     }
   }
 
-  // Funções da modal de planos
   navegarParaPlanos() {
     if (!this.empresaSelecionada) {
       alert('Selecione uma empresa primeiro!');
@@ -199,20 +234,13 @@ export class Dashboard implements OnInit {
   async onPlanoContratado() {
     this.closePlanoModal();
     await this.reloadEmpresas();
-    
-    if (this.empresaSelecionada) {
-      const empresaAtualizada = this.empresas.find(
-        e => e.id_empresa === this.empresaSelecionada!.id_empresa
-      );
-      if (empresaAtualizada) {
-        this.empresaSelecionada = empresaAtualizada;
-      }
-    }
   }
 
   selecionarEmpresa(empresa: Empresa) {
     this.empresaSelecionada = empresa;
     console.log('Empresa selecionada:', empresa);
+    // Forçar detecção de mudanças
+    this.cdr.detectChanges();
   }
 
   formatCpfCnpj(cpfCnpj: string): string {
@@ -345,6 +373,8 @@ export class Dashboard implements OnInit {
   }
 
   logout() {
+    if (!this.isBrowser) return;
+
     localStorage.removeItem('authToken');
     localStorage.removeItem('userLoggedIn');
     localStorage.removeItem('userData');

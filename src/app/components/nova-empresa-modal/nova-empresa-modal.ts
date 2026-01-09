@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output, PLATFORM_ID, Inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 interface NovaEmpresaData {
@@ -37,6 +37,7 @@ export class NovaEmpresaModal {
   @Output() onEmpresaCadastrada = new EventEmitter<void>();
 
   isSubmitting = false;
+  private isBrowser: boolean;
 
   novaEmpresa = {
     user_login: '',
@@ -108,6 +109,10 @@ export class NovaEmpresaModal {
     'Autopeças',
     'Outro',
   ];
+
+  constructor(@Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   onClose() {
     this.resetForm();
@@ -250,17 +255,19 @@ export class NovaEmpresaModal {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao cadastrar empresa');
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || errorData?.message || 'Erro ao cadastrar empresa');
       }
 
       const result = await response.json();
       console.log('Empresa cadastrada:', result);
 
       alert('Empresa cadastrada com sucesso!');
+      this.resetForm();
       this.onEmpresaCadastrada.emit();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro:', error);
-      alert('Erro ao cadastrar empresa. Tente novamente.');
+      alert(error.message || 'Erro ao cadastrar empresa. Tente novamente.');
     } finally {
       this.isSubmitting = false;
     }
