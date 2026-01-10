@@ -28,6 +28,20 @@ interface Assinatura {
   plano: Plano;
 }
 
+interface Endereco {
+  id_endereco: number;
+  pais: string;
+  estado: string;
+  cidade: string;
+  bairro: string;
+  rua: string;
+  complemento: string;
+  cep: string;
+  id_empresa: number;
+  created_at: string;
+  updated_at: string;
+}
+
 interface Empresa {
   id_empresa: number;
   user_login: string;
@@ -43,7 +57,10 @@ interface Empresa {
   created_at: string;
   updated_at: string;
   id_usuario: number;
-  assinatura: Assinatura | null;
+  enderecos?: Endereco[];
+  assinaturas?: Assinatura[];
+  // Propriedade auxiliar para compatibilidade com o template
+  assinatura?: Assinatura | null;
 }
 
 interface Usuario {
@@ -55,6 +72,12 @@ interface Usuario {
   ultimo_acesso: string;
   created_at: string;
   updated_at: string;
+  dadosEmpresas?: Empresa[];
+}
+
+interface UserUpdateResponse {
+  message: string;
+  usuario: Usuario;
 }
 
 @Component({
@@ -62,7 +85,7 @@ interface Usuario {
   imports: [CommonModule, RouterModule, FormsModule, NovaEmpresaModal, PlanoModal],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
-  standalone: true
+  standalone: true,
 })
 export class Dashboard implements OnInit {
   usuario: Usuario = {
@@ -73,13 +96,13 @@ export class Dashboard implements OnInit {
     role: '',
     ultimo_acesso: '',
     created_at: '',
-    updated_at: ''
+    updated_at: '',
   };
 
   usuarioAvatar = '👨‍💼';
   empresaSelecionada: Empresa | null = null;
   empresas: Empresa[] = [];
-  
+
   showAddEmpresaModal = false;
   showPlanoModal = false;
   private isBrowser: boolean;
@@ -103,8 +126,8 @@ export class Dashboard implements OnInit {
 
     this.loadUserData();
     this.loadEmpresasData();
-    
-    // CORREÇÃO 1: Sempre recarregar empresas ao inicializar/atualizar a página
+
+    // Sempre recarregar empresas ao inicializar/atualizar a página
     this.reloadEmpresas();
   }
 
@@ -132,12 +155,12 @@ export class Dashboard implements OnInit {
     if (empresasData) {
       try {
         const data = JSON.parse(empresasData);
-        this.empresas = Array.isArray(data) ? data : [];
-        
+        this.empresas = this.processEmpresas(Array.isArray(data) ? data : []);
+
         if (this.empresas.length > 0) {
           this.empresaSelecionada = this.empresas[0];
         }
-        
+
         // Forçar detecção de mudanças
         this.cdr.detectChanges();
       } catch (error) {
@@ -149,11 +172,32 @@ export class Dashboard implements OnInit {
   private getAvatarFromName(nome: string): string {
     const firstLetter = nome.charAt(0).toUpperCase();
     const avatars: { [key: string]: string } = {
-      'A': '👨‍💼', 'B': '👩‍💼', 'C': '👨‍💻', 'D': '👩‍💻', 'E': '👨‍🔧',
-      'F': '👩‍🔧', 'G': '👨‍🎨', 'H': '👩‍🎨', 'I': '👨‍🍳', 'J': '👩‍🍳',
-      'K': '👨‍⚕️', 'L': '👩‍⚕️', 'M': '👨‍🏫', 'N': '👩‍🏫', 'O': '👨‍🚀',
-      'P': '👩‍🚀', 'Q': '👨‍🎓', 'R': '👩‍🎓', 'S': '👨‍💼', 'T': '👩‍💼',
-      'U': '👨‍🔬', 'V': '👩‍🔬', 'W': '👨‍🎤', 'X': '👩‍🎤', 'Y': '👨‍✈️', 'Z': '👩‍✈️'
+      A: '👨‍💼',
+      B: '👩‍💼',
+      C: '👨‍💻',
+      D: '👩‍💻',
+      E: '👨‍🔧',
+      F: '👩‍🔧',
+      G: '👨‍🎨',
+      H: '👩‍🎨',
+      I: '👨‍🍳',
+      J: '👩‍🍳',
+      K: '👨‍⚕️',
+      L: '👩‍⚕️',
+      M: '👨‍🏫',
+      N: '👩‍🏫',
+      O: '👨‍🚀',
+      P: '👩‍🚀',
+      Q: '👨‍🎓',
+      R: '👩‍🎓',
+      S: '👨‍💼',
+      T: '👩‍💼',
+      U: '👨‍🔬',
+      V: '👩‍🔬',
+      W: '👨‍🎤',
+      X: '👩‍🎤',
+      Y: '👨‍✈️',
+      Z: '👩‍✈️',
     };
     return avatars[firstLetter] || '👤';
   }
@@ -171,6 +215,29 @@ export class Dashboard implements OnInit {
     await this.reloadEmpresas();
   }
 
+  /**
+   * Processa as empresas para adicionar a propriedade 'assinatura'
+   * baseado no array 'assinaturas'
+   */
+  private processEmpresas(empresas: Empresa[]): Empresa[] {
+    return empresas.map((empresa) => {
+      // Se a empresa tem assinaturas, pega a primeira ativa
+      if (empresa.assinaturas && empresa.assinaturas.length > 0) {
+        // Procura por uma assinatura ativa
+        const assinaturaAtiva = empresa.assinaturas.find(
+          (assinatura) => assinatura.status.toLowerCase() === 'ativa'
+        );
+
+        // Se encontrou uma ativa, usa ela; senão, usa a primeira
+        empresa.assinatura = assinaturaAtiva || empresa.assinaturas[0];
+      } else {
+        empresa.assinatura = null;
+      }
+
+      return empresa;
+    });
+  }
+
   async reloadEmpresas() {
     if (!this.isBrowser) return;
 
@@ -185,21 +252,39 @@ export class Dashboard implements OnInit {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      
       if (response.ok) {
-        const data = await response.json();
-        console.log(data)
-        
+        const data: UserUpdateResponse = await response.json();
+        console.log('Resposta da API:', data);
+
         if (data.usuario && data.usuario.dadosEmpresas) {
-          this.empresas = data.usuario.dadosEmpresas;
+          // Processa as empresas para adicionar a propriedade 'assinatura'
+          this.empresas = this.processEmpresas(data.usuario.dadosEmpresas);
+
+          // Atualiza o localStorage
           localStorage.setItem('empresasData', JSON.stringify(this.empresas));
-          
+          localStorage.setItem(
+            'userData',
+            JSON.stringify({
+              id_usuario: data.usuario.id_usuario,
+              nome: data.usuario.nome,
+              email: data.usuario.email,
+              telefone: data.usuario.telefone,
+              role: data.usuario.role,
+              ultimo_acesso: data.usuario.ultimo_acesso,
+              created_at: data.usuario.created_at,
+              updated_at: data.usuario.updated_at,
+            })
+          );
+
           // Se não há empresa selecionada ou se a empresa atual não existe mais, selecionar a primeira
-          if (!this.empresaSelecionada || !this.empresas.find(e => e.id_empresa === this.empresaSelecionada?.id_empresa)) {
+          if (
+            !this.empresaSelecionada ||
+            !this.empresas.find((e) => e.id_empresa === this.empresaSelecionada?.id_empresa)
+          ) {
             if (this.empresas.length > 0) {
               this.empresaSelecionada = this.empresas[0];
             } else {
@@ -207,17 +292,28 @@ export class Dashboard implements OnInit {
             }
           } else {
             // Atualizar a empresa selecionada com os dados mais recentes
-            const empresaAtualizada = this.empresas.find(e => e.id_empresa === this.empresaSelecionada?.id_empresa);
+            const empresaAtualizada = this.empresas.find(
+              (e) => e.id_empresa === this.empresaSelecionada?.id_empresa
+            );
             if (empresaAtualizada) {
               this.empresaSelecionada = empresaAtualizada;
             }
           }
-          
+
+          console.log('Empresas processadas:', this.empresas);
+          console.log('Empresa selecionada:', this.empresaSelecionada);
+
           // Forçar detecção de mudanças
           this.cdr.detectChanges();
         }
       } else {
         console.error('Erro ao recarregar empresas:', response.status);
+
+        // Se o token expirou, fazer logout
+        if (response.status === 401) {
+          alert('Sessão expirada. Por favor, faça login novamente.');
+          this.logout();
+        }
       }
     } catch (error) {
       console.error('Erro ao recarregar empresas:', error);
@@ -238,7 +334,7 @@ export class Dashboard implements OnInit {
 
   async onPlanoContratado() {
     this.closePlanoModal();
-    // CORREÇÃO 1: Recarregar empresas após contratação de plano
+    // Recarregar empresas após contratação de plano
     await this.reloadEmpresas();
   }
 
@@ -251,25 +347,25 @@ export class Dashboard implements OnInit {
 
   formatCpfCnpj(cpfCnpj: string): string {
     const numbers = cpfCnpj.replace(/\D/g, '');
-    
+
     if (numbers.length === 11) {
       return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
     } else if (numbers.length === 14) {
       return numbers.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
     }
-    
+
     return cpfCnpj;
   }
 
   formatTelefone(telefone: string): string {
     const numbers = telefone.replace(/\D/g, '');
-    
+
     if (numbers.length === 11) {
       return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
     } else if (numbers.length === 10) {
       return numbers.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
     }
-    
+
     return telefone;
   }
 
@@ -279,7 +375,7 @@ export class Dashboard implements OnInit {
       return date.toLocaleDateString('pt-BR', {
         day: '2-digit',
         month: '2-digit',
-        year: 'numeric'
+        year: 'numeric',
       });
     } catch {
       return dateString;
@@ -294,7 +390,7 @@ export class Dashboard implements OnInit {
         month: '2-digit',
         year: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       });
     } catch {
       return dateString;
@@ -337,7 +433,7 @@ export class Dashboard implements OnInit {
     }
 
     const status = this.empresaSelecionada.assinatura.status.toLowerCase();
-    
+
     if (status === 'ativa') {
       const diasRestantes = this.getDiasRestantes();
       if (diasRestantes > 7) return 'ativo';
@@ -353,9 +449,9 @@ export class Dashboard implements OnInit {
   getStatusClass(status?: string): string {
     const statusAtual = status || this.getStatusEmpresa();
     const classes: Record<string, string> = {
-      'ativo': 'status-ativo',
-      'pendente': 'status-pendente',
-      'vencido': 'status-vencido'
+      ativo: 'status-ativo',
+      pendente: 'status-pendente',
+      vencido: 'status-vencido',
     };
     return classes[statusAtual] || 'status-ativo';
   }
@@ -363,9 +459,9 @@ export class Dashboard implements OnInit {
   getStatusLabel(status?: string): string {
     const statusAtual = status || this.getStatusEmpresa();
     const labels: Record<string, string> = {
-      'ativo': 'Ativo',
-      'pendente': 'Pagamento Pendente',
-      'vencido': 'Vencido'
+      ativo: 'Ativo',
+      pendente: 'Pagamento Pendente',
+      vencido: 'Vencido',
     };
     return labels[statusAtual] || 'Ativo';
   }
@@ -387,10 +483,45 @@ export class Dashboard implements OnInit {
     localStorage.removeItem('empresasData');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userName');
-    
+
     console.log('Logout realizado');
-    
+
     this.router.navigate(['/login']);
+  }
+
+  gerarBoleto() {
+    try {
+      const token = localStorage.getItem('authToken');
+      const dados = {
+        id_empresa: this.empresaSelecionada?.id_empresa,
+      };
+
+      fetch('https://cashinbox.shop/site/buscarBoleto', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(dados),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success && data.boleto && data.boleto !== false) {
+            // Abre o link do boleto em uma nova aba
+            window.open(data.boleto, '_blank');
+          } else {
+            // Exibe mensagem de que o boleto ainda não foi gerado
+            alert('O boleto ainda não foi gerado. Por favor, tente novamente mais tarde.');
+          }
+        })
+        .catch((error) => {
+          console.error('Erro ao buscar boleto:', error);
+          alert('Erro ao buscar o boleto. Por favor, tente novamente.');
+        });
+    } catch (error) {
+      console.error('Erro ao gerar boleto:', error);
+      alert('Erro inesperado ao gerar boleto.');
+    }
   }
 
   voltarParaHome() {
