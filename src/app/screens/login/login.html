@@ -13,6 +13,12 @@
         <p>Entre com sua conta para continuar</p>
       </div>
 
+      <!-- Mensagem de Sessão Expirada -->
+      <div class="error-message warning-message" *ngIf="sessionExpiredMessage">
+        <span class="error-icon">⏰</span>
+        <span>{{ sessionExpiredMessage }}</span>
+      </div>
+
       <!-- Mensagem de Erro -->
       <div class="error-message" *ngIf="errorMessage">
         <span class="error-icon">⚠️</span>

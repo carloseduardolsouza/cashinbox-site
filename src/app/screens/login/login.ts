@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 interface Plano {
   id_plano: number;
@@ -68,15 +69,48 @@ interface LoginResponse {
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit {
   email: string = '';
   password: string = '';
   rememberMe: boolean = false;
   showPassword: boolean = false;
   isLoading: boolean = false;
   errorMessage: string = '';
+  sessionExpiredMessage: string = '';
+  private isBrowser: boolean;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+
+  ngOnInit() {
+    if (!this.isBrowser) return;
+
+    // Verificar se há mensagem de sessão expirada
+    this.route.queryParams.subscribe(params => {
+      if (params['message']) {
+        this.sessionExpiredMessage = params['message'];
+        
+        // Limpar a mensagem da URL após 5 segundos
+        setTimeout(() => {
+          this.sessionExpiredMessage = '';
+          this.router.navigate(['/login']);
+        }, 5000);
+      }
+    });
+
+    // Carregar email salvo se existir
+    const rememberedEmail = localStorage.getItem('rememberedEmail');
+    if (rememberedEmail) {
+      this.email = rememberedEmail;
+      this.rememberMe = true;
+    }
+  }
 
   async onSubmit() {
     // Validações básicas
@@ -128,6 +162,9 @@ export class Login {
       localStorage.setItem('userEmail', loginData.usuario.email);
       localStorage.setItem('userName', loginData.usuario.nome);
 
+      // ✅ SALVAR DATA DO LOGIN
+      this.authService.saveLoginDate();
+
       // Se "Lembrar-me" estiver marcado, salvar email
       if (this.rememberMe) {
         localStorage.setItem('rememberedEmail', this.email);
@@ -137,8 +174,12 @@ export class Login {
 
       console.log('Login realizado com sucesso:', loginData);
 
-      // Redirecionar para o dashboard
-      this.router.navigate(['/dashboard']);
+      // ✅ REDIRECIONAR BASEADO NO ROLE
+      if (loginData.usuario.role === 'admin') {
+        this.router.navigate(['/admin-dashboard']);
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
     } catch (error: any) {
       console.error('Erro no login:', error);
       this.errorMessage = error.message || 'Erro ao fazer login. Tente novamente.';
@@ -154,14 +195,5 @@ export class Login {
   private isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-  }
-
-  ngOnInit() {
-    // Carregar email salvo se existir
-    const rememberedEmail = localStorage.getItem('rememberedEmail');
-    if (rememberedEmail) {
-      this.email = rememberedEmail;
-      this.rememberMe = true;
-    }
   }
 }

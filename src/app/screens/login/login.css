@@ -61,6 +61,13 @@
   animation: slideDown 0.3s ease;
 }
 
+/* ✅ Mensagem de Warning (Sessão Expirada) */
+.warning-message {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
 .error-icon {
   font-size: 20px;
   flex-shrink: 0;

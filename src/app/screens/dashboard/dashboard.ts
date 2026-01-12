@@ -4,7 +4,9 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NovaEmpresaModal } from '../../components/nova-empresa-modal/nova-empresa-modal';
 import { PlanoModal } from '../../components/plano-modal/plano-modal';
+import { AuthService } from '../../services/auth.service';
 
+// ... (interfaces permanecem as mesmas)
 interface Plano {
   id_plano: number;
   nome: string;
@@ -59,7 +61,6 @@ interface Empresa {
   id_usuario: number;
   enderecos?: Endereco[];
   assinaturas?: Assinatura[];
-  // Propriedade auxiliar para compatibilidade com o template
   assinatura?: Assinatura | null;
 }
 
@@ -105,11 +106,13 @@ export class Dashboard implements OnInit {
 
   showAddEmpresaModal = false;
   showPlanoModal = false;
+  showEditarEmpresaModal = false; // ✅ NOVO
   private isBrowser: boolean;
 
   constructor(
     private router: Router,
     private cdr: ChangeDetectorRef,
+    private authService: AuthService, // ✅ INJETAR AuthService
     @Inject(PLATFORM_ID) platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
@@ -118,33 +121,25 @@ export class Dashboard implements OnInit {
   ngOnInit() {
     if (!this.isBrowser) return;
 
-    const isLoggedIn = localStorage.getItem('userLoggedIn');
-    if (!isLoggedIn) {
-      this.router.navigate(['/login']);
-      return;
+    // ✅ VALIDAR AUTENTICAÇÃO E EXPIRAÇÃO
+    if (!this.authService.validateAuth()) {
+      return; // AuthService já redireciona para login
     }
 
     this.loadUserData();
     this.loadEmpresasData();
-
-    // Sempre recarregar empresas ao inicializar/atualizar a página
     this.reloadEmpresas();
   }
 
   private loadUserData() {
     if (!this.isBrowser) return;
 
-    const userData = localStorage.getItem('userData');
+    const userData = this.authService.getUserData();
     if (userData) {
-      try {
-        this.usuario = JSON.parse(userData);
-        this.usuarioAvatar = this.getAvatarFromName(this.usuario.nome);
-      } catch (error) {
-        console.error('Erro ao carregar dados do usuário:', error);
-        this.router.navigate(['/login']);
-      }
+      this.usuario = userData;
+      this.usuarioAvatar = this.getAvatarFromName(this.usuario.nome);
     } else {
-      this.router.navigate(['/login']);
+      this.authService.logout();
     }
   }
 
@@ -161,7 +156,6 @@ export class Dashboard implements OnInit {
           this.empresaSelecionada = this.empresas[0];
         }
 
-        // Forçar detecção de mudanças
         this.cdr.detectChanges();
       } catch (error) {
         console.error('Erro ao carregar dados das empresas:', error);
@@ -172,32 +166,11 @@ export class Dashboard implements OnInit {
   private getAvatarFromName(nome: string): string {
     const firstLetter = nome.charAt(0).toUpperCase();
     const avatars: { [key: string]: string } = {
-      A: '👨‍💼',
-      B: '👩‍💼',
-      C: '👨‍💻',
-      D: '👩‍💻',
-      E: '👨‍🔧',
-      F: '👩‍🔧',
-      G: '👨‍🎨',
-      H: '👩‍🎨',
-      I: '👨‍🍳',
-      J: '👩‍🍳',
-      K: '👨‍⚕️',
-      L: '👩‍⚕️',
-      M: '👨‍🏫',
-      N: '👩‍🏫',
-      O: '👨‍🚀',
-      P: '👩‍🚀',
-      Q: '👨‍🎓',
-      R: '👩‍🎓',
-      S: '👨‍💼',
-      T: '👩‍💼',
-      U: '👨‍🔬',
-      V: '👩‍🔬',
-      W: '👨‍🎤',
-      X: '👩‍🎤',
-      Y: '👨‍✈️',
-      Z: '👩‍✈️',
+      A: '👨‍💼', B: '👩‍💼', C: '👨‍💻', D: '👩‍💻', E: '👨‍🔧',
+      F: '👩‍🔧', G: '👨‍🎨', H: '👩‍🎨', I: '👨‍🍳', J: '👩‍🍳',
+      K: '👨‍⚕️', L: '👩‍⚕️', M: '👨‍🏫', N: '👩‍🏫', O: '👨‍🚀',
+      P: '👩‍🚀', Q: '👨‍🎓', R: '👩‍🎓', S: '👨‍💼', T: '👩‍💼',
+      U: '👨‍🔬', V: '👩‍🔬', W: '👨‍🎤', X: '👩‍🎤', Y: '👨‍✈️', Z: '👩‍✈️',
     };
     return avatars[firstLetter] || '👤';
   }
@@ -215,25 +188,16 @@ export class Dashboard implements OnInit {
     await this.reloadEmpresas();
   }
 
-  /**
-   * Processa as empresas para adicionar a propriedade 'assinatura'
-   * baseado no array 'assinaturas'
-   */
   private processEmpresas(empresas: Empresa[]): Empresa[] {
     return empresas.map((empresa) => {
-      // Se a empresa tem assinaturas, pega a primeira ativa
       if (empresa.assinaturas && empresa.assinaturas.length > 0) {
-        // Procura por uma assinatura ativa
         const assinaturaAtiva = empresa.assinaturas.find(
           (assinatura) => assinatura.status.toLowerCase() === 'ativa'
         );
-
-        // Se encontrou uma ativa, usa ela; senão, usa a primeira
         empresa.assinatura = assinaturaAtiva || empresa.assinaturas[0];
       } else {
         empresa.assinatura = null;
       }
-
       return empresa;
     });
   }
@@ -242,7 +206,7 @@ export class Dashboard implements OnInit {
     if (!this.isBrowser) return;
 
     try {
-      const token = localStorage.getItem('authToken');
+      const token = this.authService.getToken();
       if (!token) {
         console.error('Token não encontrado');
         return;
@@ -258,40 +222,29 @@ export class Dashboard implements OnInit {
 
       if (response.ok) {
         const data: UserUpdateResponse = await response.json();
-        console.log('Resposta da API:', data);
 
         if (data.usuario && data.usuario.dadosEmpresas) {
-          // Processa as empresas para adicionar a propriedade 'assinatura'
           this.empresas = this.processEmpresas(data.usuario.dadosEmpresas);
 
-          // Atualiza o localStorage
           localStorage.setItem('empresasData', JSON.stringify(this.empresas));
-          localStorage.setItem(
-            'userData',
-            JSON.stringify({
-              id_usuario: data.usuario.id_usuario,
-              nome: data.usuario.nome,
-              email: data.usuario.email,
-              telefone: data.usuario.telefone,
-              role: data.usuario.role,
-              ultimo_acesso: data.usuario.ultimo_acesso,
-              created_at: data.usuario.created_at,
-              updated_at: data.usuario.updated_at,
-            })
-          );
+          localStorage.setItem('userData', JSON.stringify({
+            id_usuario: data.usuario.id_usuario,
+            nome: data.usuario.nome,
+            email: data.usuario.email,
+            telefone: data.usuario.telefone,
+            role: data.usuario.role,
+            ultimo_acesso: data.usuario.ultimo_acesso,
+            created_at: data.usuario.created_at,
+            updated_at: data.usuario.updated_at,
+          }));
 
-          // Se não há empresa selecionada ou se a empresa atual não existe mais, selecionar a primeira
-          if (
-            !this.empresaSelecionada ||
-            !this.empresas.find((e) => e.id_empresa === this.empresaSelecionada?.id_empresa)
-          ) {
+          if (!this.empresaSelecionada || !this.empresas.find((e) => e.id_empresa === this.empresaSelecionada?.id_empresa)) {
             if (this.empresas.length > 0) {
               this.empresaSelecionada = this.empresas[0];
             } else {
               this.empresaSelecionada = null;
             }
           } else {
-            // Atualizar a empresa selecionada com os dados mais recentes
             const empresaAtualizada = this.empresas.find(
               (e) => e.id_empresa === this.empresaSelecionada?.id_empresa
             );
@@ -300,19 +253,11 @@ export class Dashboard implements OnInit {
             }
           }
 
-          console.log('Empresas processadas:', this.empresas);
-          console.log('Empresa selecionada:', this.empresaSelecionada);
-
-          // Forçar detecção de mudanças
           this.cdr.detectChanges();
         }
       } else {
-        console.error('Erro ao recarregar empresas:', response.status);
-
-        // Se o token expirou, fazer logout
         if (response.status === 401) {
-          alert('Sessão expirada. Por favor, faça login novamente.');
-          this.logout();
+          this.authService.logout('Sessão expirada. Por favor, faça login novamente.');
         }
       }
     } catch (error) {
@@ -334,14 +279,11 @@ export class Dashboard implements OnInit {
 
   async onPlanoContratado() {
     this.closePlanoModal();
-    // Recarregar empresas após contratação de plano
     await this.reloadEmpresas();
   }
 
   selecionarEmpresa(empresa: Empresa) {
     this.empresaSelecionada = empresa;
-    console.log('Empresa selecionada:', empresa);
-    // Forçar detecção de mudanças
     this.cdr.detectChanges();
   }
 
@@ -475,23 +417,12 @@ export class Dashboard implements OnInit {
   }
 
   logout() {
-    if (!this.isBrowser) return;
-
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userLoggedIn');
-    localStorage.removeItem('userData');
-    localStorage.removeItem('empresasData');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userName');
-
-    console.log('Logout realizado');
-
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 
   gerarBoleto() {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = this.authService.getToken();
       const dados = {
         id_empresa: this.empresaSelecionada?.id_empresa,
       };
@@ -507,10 +438,8 @@ export class Dashboard implements OnInit {
         .then((response) => response.json())
         .then((data) => {
           if (data.success && data.boleto && data.boleto !== false) {
-            // Abre o link do boleto em uma nova aba
             window.open(data.boleto, '_blank');
           } else {
-            // Exibe mensagem de que o boleto ainda não foi gerado
             alert('O boleto ainda não foi gerado. Por favor, tente novamente mais tarde.');
           }
         })
@@ -528,9 +457,18 @@ export class Dashboard implements OnInit {
     this.router.navigate(['/']);
   }
 
+  // ✅ NOVA FUNCIONALIDADE: Ver dados completos da empresa
   editarEmpresa() {
-    console.log('Editar empresa:', this.empresaSelecionada);
-    alert('Funcionalidade de edição em desenvolvimento!');
+    if (!this.empresaSelecionada) {
+      alert('Selecione uma empresa primeiro!');
+      return;
+    }
+    
+    this.showEditarEmpresaModal = true;
+  }
+
+  closeEditarEmpresaModal() {
+    this.showEditarEmpresaModal = false;
   }
 
   configurarModulo(modulo: string) {
