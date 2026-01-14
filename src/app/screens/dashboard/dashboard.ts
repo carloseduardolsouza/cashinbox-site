@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NovaEmpresaModal } from '../../components/nova-empresa-modal/nova-empresa-modal';
 import { PlanoModal } from '../../components/plano-modal/plano-modal';
+import { EditarEmpresaModal } from '../../components/editar-empresa-modal/editar-empresa-modal';
 import { AuthService } from '../../services/auth.service';
 
 // ... (interfaces permanecem as mesmas)
@@ -83,7 +84,7 @@ interface UserUpdateResponse {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, RouterModule, FormsModule, NovaEmpresaModal, PlanoModal],
+  imports: [CommonModule, RouterModule, FormsModule, NovaEmpresaModal, PlanoModal, EditarEmpresaModal],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
   standalone: true,

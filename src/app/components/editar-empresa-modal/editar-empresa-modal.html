@@ -1,0 +1,150 @@
+<div class="modal-overlay" *ngIf="show" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>📋 Dados da Empresa</h2>
+      <button class="btn-close" (click)="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-body" *ngIf="empresa">
+      <!-- Informações Básicas -->
+      <section class="info-section">
+        <h3>Informações Básicas</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Nome Fantasia</label>
+            <p>{{ empresa.nome_fantasia }}</p>
+          </div>
+          <div class="info-item">
+            <label>Razão Social</label>
+            <p>{{ empresa.razao_social }}</p>
+          </div>
+          <div class="info-item">
+            <label>CPF/CNPJ</label>
+            <p>{{ formatCpfCnpj(empresa.cpf_cnpj) }}</p>
+          </div>
+          <div class="info-item">
+            <label>Inscrição Estadual</label>
+            <p>{{ empresa.inscricao_estadual }}</p>
+          </div>
+          <div class="info-item">
+            <label>Segmento</label>
+            <p>{{ empresa.segmento }}</p>
+          </div>
+          <div class="info-item">
+            <label>Telefone</label>
+            <p>{{ formatTelefone(empresa.telefone) }}</p>
+          </div>
+          <div class="info-item">
+            <label>E-mail</label>
+            <p>{{ empresa.email || 'Não informado' }}</p>
+          </div>
+          <div class="info-item">
+            <label>User Login</label>
+            <p>{{ empresa.user_login }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Endereço -->
+      <section class="info-section" *ngIf="getEnderecoPrincipal() as endereco">
+        <h3>Endereço</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>CEP</label>
+            <p>{{ endereco.cep }}</p>
+          </div>
+          <div class="info-item">
+            <label>Rua</label>
+            <p>{{ endereco.rua }}</p>
+          </div>
+          <div class="info-item">
+            <label>Bairro</label>
+            <p>{{ endereco.bairro }}</p>
+          </div>
+          <div class="info-item">
+            <label>Cidade</label>
+            <p>{{ endereco.cidade }}</p>
+          </div>
+          <div class="info-item">
+            <label>Estado</label>
+            <p>{{ endereco.estado }}</p>
+          </div>
+          <div class="info-item">
+            <label>País</label>
+            <p>{{ endereco.pais }}</p>
+          </div>
+          <div class="info-item full-width">
+            <label>Complemento</label>
+            <p>{{ endereco.complemento || 'Não informado' }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Assinatura -->
+      <section class="info-section" *ngIf="empresa.assinatura">
+        <h3>Assinatura</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Plano</label>
+            <p>{{ empresa.assinatura.plano.nome }}</p>
+          </div>
+          <div class="info-item">
+            <label>Valor</label>
+            <p>R$ {{ (+empresa.assinatura.plano.valor).toFixed(2) }}</p>
+          </div>
+          <div class="info-item">
+            <label>Status</label>
+            <p>{{ empresa.assinatura.status }}</p>
+          </div>
+          <div class="info-item">
+            <label>Expira em</label>
+            <p>{{ formatDate(empresa.assinatura.expira_em) }}</p>
+          </div>
+          <div class="info-item">
+            <label>Duração</label>
+            <p>{{ empresa.assinatura.plano.duracao_dias }} dias</p>
+          </div>
+          <div class="info-item">
+            <label>Fidelidade</label>
+            <p>{{ empresa.assinatura.plano.fidelidade ? 'Sim' : 'Não' }}</p>
+          </div>
+          <div class="info-item" *ngIf="empresa.assinatura.fidelidade_fim">
+            <label>Fim da Fidelidade</label>
+            <p>{{ formatDate(empresa.assinatura.fidelidade_fim) }}</p>
+          </div>
+          <div class="info-item">
+            <label>Assinatura desde</label>
+            <p>{{ formatDate(empresa.assinatura.created_at) }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Datas -->
+      <section class="info-section">
+        <h3>Informações de Sistema</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Cadastrado em</label>
+            <p>{{ formatDateTime(empresa.created_at) }}</p>
+          </div>
+          <div class="info-item">
+            <label>Última atualização</label>
+            <p>{{ formatDateTime(empresa.updated_at) }}</p>
+          </div>
+          <div class="info-item">
+            <label>Último acesso</label>
+            <p>{{ formatDateTime(empresa.ultimo_acesso) }}</p>
+          </div>
+          <div class="info-item">
+            <label>ID da Empresa</label>
+            <p>#{{ empresa.id_empresa }}</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeModal()">Fechar</button>
+    </div>
+  </div>
+</div>

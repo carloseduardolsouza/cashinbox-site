@@ -1,0 +1,236 @@
+<div class="dashboard-admin-container">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="header-left">
+        <img
+          src="img/Logo-CashInBox-icon-tipografia.png"
+          alt="Cash in Box"
+          class="dashboard-logo"
+          (click)="voltarParaHome()"
+        />
+        <h1>Painel Administrativo</h1>
+      </div>
+      <div class="header-right">
+        <div class="user-info">
+          <span class="user-avatar">{{ usuarioAvatar }}</span>
+          <div class="user-details">
+            <strong>{{ usuario.nome }}</strong>
+            <span class="admin-badge">Administrador</span>
+          </div>
+        </div>
+        <button class="btn-logout" (click)="logout()">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Loading -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="loading-spinner"></div>
+    <p>Carregando dados...</p>
+  </div>
+
+  <!-- Main Content -->
+  <main class="dashboard-main" *ngIf="!isLoading">
+    <!-- Estatísticas -->
+    <section class="stats-section">
+      <div class="stat-card">
+        <div class="stat-icon">🏢</div>
+        <div class="stat-content">
+          <h3>{{ stats.totalEmpresas }}</h3>
+          <p>Empresas</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-content">
+          <h3>{{ stats.totalUsuarios }}</h3>
+          <p>Usuários</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <h3>{{ stats.assinaturasAtivas }}</h3>
+          <p>Assinaturas Ativas</p>
+        </div>
+      </div>
+
+      <div class="stat-card highlight">
+        <div class="stat-icon">💰</div>
+        <div class="stat-content">
+          <h3>{{ formatCurrency(stats.receitaMensal) }}</h3>
+          <p>Receita Mensal</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <section class="tabs-section">
+      <button
+        class="tab-button"
+        [class.active]="viewMode === 'empresas'"
+        (click)="changeView('empresas')"
+      >
+        🏢 Empresas
+      </button>
+      <button
+        class="tab-button"
+        [class.active]="viewMode === 'usuarios'"
+        (click)="changeView('usuarios')"
+      >
+        👥 Usuários
+      </button>
+      <button
+        class="tab-button"
+        [class.active]="viewMode === 'planos'"
+        (click)="changeView('planos')"
+      >
+        📋 Planos
+      </button>
+    </section>
+
+    <!-- Filters -->
+    <section class="filters-section">
+      <div class="search-box">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Pesquisar..."
+          class="search-input"
+        />
+      </div>
+
+      <div class="filter-box" *ngIf="viewMode === 'empresas'">
+        <select [(ngModel)]="filtroStatus" class="filter-select">
+          <option value="todos">Todos os Status</option>
+          <option value="ativa">Ativos</option>
+          <option value="pendente">Pendentes</option>
+          <option value="vencida">Vencidos</option>
+          <option value="sem-plano">Sem Plano</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Content Area -->
+    <section class="content-section">
+      <!-- Empresas View -->
+      <div class="table-container" *ngIf="viewMode === 'empresas'">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome Fantasia</th>
+              <th>CPF/CNPJ</th>
+              <th>Telefone</th>
+              <th>E-mail</th>
+              <th>Plano</th>
+              <th>Status</th>
+              <th>Cadastro</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let empresa of filteredEmpresas">
+              <td>#{{ empresa.id_empresa }}</td>
+              <td><strong>{{ empresa.nome_fantasia }}</strong></td>
+              <td>{{ formatCpfCnpj(empresa.cpf_cnpj) }}</td>
+              <td>{{ formatTelefone(empresa.telefone) }}</td>
+              <td>{{ empresa.email || '-' }}</td>
+              <td>{{ empresa.assinatura?.plano?.nome || 'Sem plano' }}</td>
+              <td>
+                <span
+                  class="status-badge"
+                  [ngClass]="getStatusClass(empresa.assinatura?.status)"
+                >
+                  {{ getStatusLabel(empresa.assinatura?.status) }}
+                </span>
+              </td>
+              <td>{{ formatDate(empresa.created_at) }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="empty-state" *ngIf="filteredEmpresas.length === 0">
+          <p>Nenhuma empresa encontrada.</p>
+        </div>
+      </div>
+
+      <!-- Usuários View -->
+      <div class="table-container" *ngIf="viewMode === 'usuarios'">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>E-mail</th>
+              <th>Telefone</th>
+              <th>Role</th>
+              <th>Último Acesso</th>
+              <th>Cadastro</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let usuario of filteredUsuarios">
+              <td>#{{ usuario.id_usuario }}</td>
+              <td><strong>{{ usuario.nome }}</strong></td>
+              <td>{{ usuario.email }}</td>
+              <td>{{ formatTelefone(usuario.telefone) }}</td>
+              <td>
+                <span
+                  class="role-badge"
+                  [class.role-admin]="usuario.role === 'admin'"
+                >
+                  {{ usuario.role }}
+                </span>
+              </td>
+              <td>{{ formatDateTime(usuario.ultimo_acesso) }}</td>
+              <td>{{ formatDate(usuario.created_at) }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="empty-state" *ngIf="filteredUsuarios.length === 0">
+          <p>Nenhum usuário encontrado.</p>
+        </div>
+      </div>
+
+      <!-- Planos View -->
+      <div class="table-container" *ngIf="viewMode === 'planos'">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Valor</th>
+              <th>Duração</th>
+              <th>Fidelidade</th>
+              <th>Dias de Fidelidade</th>
+              <th>Cadastro</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let plano of filteredPlanos">
+              <td>#{{ plano.id_plano }}</td>
+              <td><strong>{{ plano.nome }}</strong></td>
+              <td>{{ formatCurrency(+plano.valor) }}</td>
+              <td>{{ plano.duracao_dias }} dias</td>
+              <td>
+                <span [class.badge-success]="plano.fidelidade" [class.badge-default]="!plano.fidelidade">
+                  {{ plano.fidelidade ? 'Sim' : 'Não' }}
+                </span>
+              </td>
+              <td>{{ plano.fidelidade_dias || '-' }}</td>
+              <td>{{ formatDate(plano.created_at) }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="empty-state" *ngIf="filteredPlanos.length === 0">
+          <p>Nenhum plano encontrado.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

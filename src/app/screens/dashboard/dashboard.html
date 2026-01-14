@@ -200,3 +200,10 @@
   (onCloseModal)="closePlanoModal()"
   (onPlanoContratado)="onPlanoContratado()"
 ></app-plano-modal>
+
+<!-- Modal de Editar/Ver Empresa -->
+<app-editar-empresa-modal
+  [show]="showEditarEmpresaModal"
+  [empresa]="empresaSelecionada"
+  (onCloseModal)="closeEditarEmpresaModal()"
+></app-editar-empresa-modal>
