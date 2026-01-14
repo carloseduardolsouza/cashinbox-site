@@ -108,6 +108,9 @@ export class DashboardAdmin implements OnInit {
   // Estados de visualização
   viewMode: 'empresas' | 'usuarios' | 'planos' | 'assinaturas' = 'empresas';
   isLoading: boolean = false;
+  showModal: boolean = false;
+  modalMode: 'create' | 'edit' = 'create';
+  selectedItem: any = null;
 
   // Estatísticas
   stats = {
@@ -176,6 +179,7 @@ export class DashboardAdmin implements OnInit {
         this.loadEmpresas(),
         this.loadUsuarios(),
         this.loadPlanos(),
+        this.loadAssinaturas(),
       ]);
       this.calculateStats();
     } catch (error) {
@@ -192,7 +196,7 @@ export class DashboardAdmin implements OnInit {
       const token = this.authService.getToken();
       if (!token) return;
 
-      const response = await fetch('https://cashinbox.shop/admin/empresas', {
+      const response = await fetch('https://cashinbox.shop/empresas', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -202,7 +206,7 @@ export class DashboardAdmin implements OnInit {
 
       if (response.ok) {
         const data = await response.json();
-        this.empresas = data.empresas || [];
+        this.empresas = data.data || [];
       } else if (response.status === 401) {
         this.authService.logout('Sessão expirada. Por favor, faça login novamente.');
       }
@@ -216,7 +220,7 @@ export class DashboardAdmin implements OnInit {
       const token = this.authService.getToken();
       if (!token) return;
 
-      const response = await fetch('https://cashinbox.shop/admin/usuarios', {
+      const response = await fetch('https://cashinbox.shop/usuarios', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -226,7 +230,7 @@ export class DashboardAdmin implements OnInit {
 
       if (response.ok) {
         const data = await response.json();
-        this.usuarios = data.usuarios || [];
+        this.usuarios = data.data || [];
       } else if (response.status === 401) {
         this.authService.logout('Sessão expirada. Por favor, faça login novamente.');
       }
@@ -237,10 +241,28 @@ export class DashboardAdmin implements OnInit {
 
   async loadPlanos() {
     try {
+      const response = await fetch('https://cashinbox.shop/planos', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        this.planos = data.data || [];
+      }
+    } catch (error) {
+      console.error('Erro ao carregar planos:', error);
+    }
+  }
+
+  async loadAssinaturas() {
+    try {
       const token = this.authService.getToken();
       if (!token) return;
 
-      const response = await fetch('https://cashinbox.shop/admin/planos', {
+      const response = await fetch('https://cashinbox.shop/assinaturas', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -250,12 +272,12 @@ export class DashboardAdmin implements OnInit {
 
       if (response.ok) {
         const data = await response.json();
-        this.planos = data.planos || [];
+        this.assinaturas = data.data || [];
       } else if (response.status === 401) {
         this.authService.logout('Sessão expirada. Por favor, faça login novamente.');
       }
     } catch (error) {
-      console.error('Erro ao carregar planos:', error);
+      console.error('Erro ao carregar assinaturas:', error);
     }
   }
 
@@ -325,6 +347,17 @@ export class DashboardAdmin implements OnInit {
 
     const term = this.searchTerm.toLowerCase();
     return this.planos.filter(plano => plano.nome.toLowerCase().includes(term));
+  }
+
+  get filteredAssinaturas() {
+    if (!this.searchTerm) return this.assinaturas;
+
+    const term = this.searchTerm.toLowerCase();
+    return this.assinaturas.filter(
+      assinatura =>
+        assinatura.status.toLowerCase().includes(term) ||
+        assinatura.id_assinatura.toString().includes(term)
+    );
   }
 
   formatCpfCnpj(cpfCnpj: string): string {
@@ -411,5 +444,318 @@ export class DashboardAdmin implements OnInit {
 
   voltarParaHome() {
     this.router.navigate(['/']);
+  }
+
+  // Métodos para gerenciar modais
+  openCreateModal() {
+    this.modalMode = 'create';
+    this.selectedItem = null;
+    this.showModal = true;
+  }
+
+  openEditModal(item: any) {
+    this.modalMode = 'edit';
+    this.selectedItem = { ...item };
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.selectedItem = null;
+  }
+
+  // Métodos CRUD para Usuários
+  async deleteUsuario(id: number) {
+    if (!confirm('Tem certeza que deseja deletar este usuário?')) return;
+
+    try {
+      const token = this.authService.getToken();
+      if (!token) return;
+
+      const response = await fetch(`https://cashinbox.shop/usuarios/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        alert('Usuário deletado com sucesso!');
+        await this.loadUsuarios();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Erro ao deletar usuário');
+      }
+    } catch (error) {
+      console.error('Erro ao deletar usuário:', error);
+      alert('Erro ao deletar usuário');
+    }
+  }
+
+  async createUsuario(data: any) {
+    try {
+      const token = this.authService.getToken();
+      if (!token) return;
+
+      const response = await fetch('https://cashinbox.shop/usuarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert('Usuário criado com sucesso!');
+        this.closeModal();
+        await this.loadUsuarios();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Erro ao criar usuário');
+      }
+    } catch (error) {
+      console.error('Erro ao criar usuário:', error);
+      alert('Erro ao criar usuário');
+    }
+  }
+
+  async updateUsuario(id: number, data: any) {
+    try {
+      const token = this.authService.getToken();
+      if (!token) return;
+
+      const response = await fetch(`https://cashinbox.shop/usuarios/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert('Usuário atualizado com sucesso!');
+        this.closeModal();
+        await this.loadUsuarios();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Erro ao atualizar usuário');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar usuário:', error);
+      alert('Erro ao atualizar usuário');
+    }
+  }
+
+  // Métodos CRUD para Empresas
+  async deleteEmpresa(id: number) {
+    if (!confirm('Tem certeza que deseja deletar esta empresa? Todos os dados vinculados serão removidos.')) return;
+
+    try {
+      const token = this.authService.getToken();
+      if (!token) return;
+
+      const response = await fetch(`https://cashinbox.shop/empresas/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        alert('Empresa deletada com sucesso!');
+        await this.loadEmpresas();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Erro ao deletar empresa');
+      }
+    } catch (error) {
+      console.error('Erro ao deletar empresa:', error);
+      alert('Erro ao deletar empresa');
+    }
+  }
+
+  // Métodos CRUD para Planos
+  async deletePlano(id: number) {
+    if (!confirm('Tem certeza que deseja deletar este plano?')) return;
+
+    try {
+      const token = this.authService.getToken();
+      if (!token) return;
+
+      const response = await fetch(`https://cashinbox.shop/planos/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        alert('Plano deletado com sucesso!');
+        await this.loadPlanos();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Erro ao deletar plano. Verifique se há assinaturas ativas vinculadas.');
+      }
+    } catch (error) {
+      console.error('Erro ao deletar plano:', error);
+      alert('Erro ao deletar plano');
+    }
+  }
+
+  async createPlano(data: any) {
+    try {
+      const token = this.authService.getToken();
+      if (!token) return;
+
+      const response = await fetch('https://cashinbox.shop/planos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert('Plano criado com sucesso!');
+        this.closeModal();
+        await this.loadPlanos();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Erro ao criar plano');
+      }
+    } catch (error) {
+      console.error('Erro ao criar plano:', error);
+      alert('Erro ao criar plano');
+    }
+  }
+
+  async updatePlano(id: number, data: any) {
+    try {
+      const token = this.authService.getToken();
+      if (!token) return;
+
+      const response = await fetch(`https://cashinbox.shop/planos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert('Plano atualizado com sucesso!');
+        this.closeModal();
+        await this.loadPlanos();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Erro ao atualizar plano');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar plano:', error);
+      alert('Erro ao atualizar plano');
+    }
+  }
+
+  // Métodos para Assinaturas
+  async deleteAssinatura(id: number) {
+    if (!confirm('Tem certeza que deseja deletar esta assinatura?')) return;
+
+    try {
+      const token = this.authService.getToken();
+      if (!token) return;
+
+      const response = await fetch(`https://cashinbox.shop/assinaturas/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        alert('Assinatura deletada com sucesso!');
+        await this.loadAssinaturas();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Erro ao deletar assinatura');
+      }
+    } catch (error) {
+      console.error('Erro ao deletar assinatura:', error);
+      alert('Erro ao deletar assinatura');
+    }
+  }
+
+  async cancelarAssinatura(id: number) {
+    if (!confirm('Tem certeza que deseja cancelar esta assinatura?')) return;
+
+    try {
+      const token = this.authService.getToken();
+      if (!token) return;
+
+      const response = await fetch(`https://cashinbox.shop/assinaturas/cancelar/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message || 'Assinatura cancelada com sucesso!');
+        await this.loadAssinaturas();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Erro ao cancelar assinatura');
+      }
+    } catch (error) {
+      console.error('Erro ao cancelar assinatura:', error);
+      alert('Erro ao cancelar assinatura');
+    }
+  }
+
+  async updateAssinatura(id: number, data: any) {
+    try {
+      const token = this.authService.getToken();
+      if (!token) return;
+
+      const response = await fetch(`https://cashinbox.shop/assinaturas/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert('Assinatura atualizada com sucesso!');
+        this.closeModal();
+        await this.loadAssinaturas();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Erro ao atualizar assinatura');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar assinatura:', error);
+      alert('Erro ao atualizar assinatura');
+    }
+  }
+
+  getNomeEmpresaById(id: number): string {
+    const empresa = this.empresas.find(e => e.id_empresa === id);
+    return empresa?.nome_fantasia || `Empresa #${id}`;
+  }
+
+  getNomePlanoById(id: number): string {
+    const plano = this.planos.find(p => p.id_plano === id);
+    return plano?.nome || `Plano #${id}`;
   }
 }

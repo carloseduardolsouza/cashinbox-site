@@ -90,6 +90,13 @@
       >
         📋 Planos
       </button>
+      <button
+        class="tab-button"
+        [class.active]="viewMode === 'assinaturas'"
+        (click)="changeView('assinaturas')"
+      >
+        📄 Assinaturas
+      </button>
     </section>
 
     <!-- Filters -->
@@ -129,6 +136,7 @@
               <th>Plano</th>
               <th>Status</th>
               <th>Cadastro</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -148,6 +156,11 @@
                 </span>
               </td>
               <td>{{ formatDate(empresa.created_at) }}</td>
+              <td>
+                <button class="btn-action btn-delete" (click)="deleteEmpresa(empresa.id_empresa)" title="Deletar">
+                  🗑️
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -159,6 +172,9 @@
 
       <!-- Usuários View -->
       <div class="table-container" *ngIf="viewMode === 'usuarios'">
+        <div class="table-header-actions">
+          <button class="btn-primary" (click)="openCreateModal()">➕ Novo Usuário</button>
+        </div>
         <table class="data-table">
           <thead>
             <tr>
@@ -169,6 +185,7 @@
               <th>Role</th>
               <th>Último Acesso</th>
               <th>Cadastro</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -187,6 +204,14 @@
               </td>
               <td>{{ formatDateTime(usuario.ultimo_acesso) }}</td>
               <td>{{ formatDate(usuario.created_at) }}</td>
+              <td>
+                <button class="btn-action btn-edit" (click)="openEditModal(usuario)" title="Editar">
+                  ✏️
+                </button>
+                <button class="btn-action btn-delete" (click)="deleteUsuario(usuario.id_usuario)" title="Deletar">
+                  🗑️
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -198,6 +223,9 @@
 
       <!-- Planos View -->
       <div class="table-container" *ngIf="viewMode === 'planos'">
+        <div class="table-header-actions">
+          <button class="btn-primary" (click)="openCreateModal()">➕ Novo Plano</button>
+        </div>
         <table class="data-table">
           <thead>
             <tr>
@@ -208,6 +236,7 @@
               <th>Fidelidade</th>
               <th>Dias de Fidelidade</th>
               <th>Cadastro</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -223,12 +252,71 @@
               </td>
               <td>{{ plano.fidelidade_dias || '-' }}</td>
               <td>{{ formatDate(plano.created_at) }}</td>
+              <td>
+                <button class="btn-action btn-edit" (click)="openEditModal(plano)" title="Editar">
+                  ✏️
+                </button>
+                <button class="btn-action btn-delete" (click)="deletePlano(plano.id_plano)" title="Deletar">
+                  🗑️
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
 
         <div class="empty-state" *ngIf="filteredPlanos.length === 0">
           <p>Nenhum plano encontrado.</p>
+        </div>
+      </div>
+
+      <!-- Assinaturas View -->
+      <div class="table-container" *ngIf="viewMode === 'assinaturas'">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Empresa</th>
+              <th>Plano</th>
+              <th>Status</th>
+              <th>Expira em</th>
+              <th>Fidelidade até</th>
+              <th>Cadastro</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let assinatura of filteredAssinaturas">
+              <td>#{{ assinatura.id_assinatura }}</td>
+              <td><strong>{{ getNomeEmpresaById(assinatura.id_empresa) }}</strong></td>
+              <td>{{ getNomePlanoById(assinatura.id_plano) }}</td>
+              <td>
+                <span
+                  class="status-badge"
+                  [ngClass]="getStatusClass(assinatura.status)"
+                >
+                  {{ getStatusLabel(assinatura.status) }}
+                </span>
+              </td>
+              <td>{{ formatDate(assinatura.expira_em) }}</td>
+              <td>{{ assinatura.fidelidade_fim ? formatDate(assinatura.fidelidade_fim) : '-' }}</td>
+              <td>{{ formatDate(assinatura.created_at) }}</td>
+              <td>
+                <button class="btn-action btn-edit" (click)="openEditModal(assinatura)" title="Editar">
+                  ✏️
+                </button>
+                <button class="btn-action btn-warning" (click)="cancelarAssinatura(assinatura.id_assinatura)" title="Cancelar">
+                  ⚠️
+                </button>
+                <button class="btn-action btn-delete" (click)="deleteAssinatura(assinatura.id_assinatura)" title="Deletar">
+                  🗑️
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="empty-state" *ngIf="filteredAssinaturas.length === 0">
+          <p>Nenhuma assinatura encontrada.</p>
         </div>
       </div>
     </section>
